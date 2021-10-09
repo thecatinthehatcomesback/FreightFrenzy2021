@@ -35,7 +35,7 @@ public class CatHW_Async
     CatHW_Jaws jaws = null;
     //CatHW_Claw claw = null;
     CatHW_DriveClassic driveClassic = null;
-    CatHW_DriveOdo driveOdo = null;
+
     CatHW_Tail tail = null;
     CatHW_Launcher launcher = null;
     CatHW_Vision eyes = null;
@@ -96,8 +96,7 @@ public class CatHW_Async
         if (isInitOdo) {
             opMode.telemetry.addData("Initialize", "DriveOdo...");
             opMode.telemetry.update();
-            driveOdo = new CatHW_DriveOdo(this);
-            driveOdo.init();
+
         }
         opMode.telemetry.addData("Initialize", "DriveClassic...");
         opMode.telemetry.update();

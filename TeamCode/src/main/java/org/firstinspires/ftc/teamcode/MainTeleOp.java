@@ -52,7 +52,6 @@ public class MainTeleOp extends LinearOpMode
         // Initialize the hardware
         robot.init(hardwareMap, this, true, false);
         robot.driveClassic.IMU_Init();
-        robot.driveOdo.updatesThread.positionUpdate.useIMUCorrection = true;
 
         // Finished!  Now tell the driver...
         telemetry.addData("Status", "Initialized...  BOOM!");
@@ -96,56 +95,7 @@ public class MainTeleOp extends LinearOpMode
             //--------------------------------------------------------------------------------------
             // Driver 1 Controls:
             //--------------------------------------------------------------------------------------
-            if(gamepad1.y && (turningMode == false)){ // turn for auto aim at power shot
-                turningMode = true;
-                targetAngle = baseTargetAngle - 10;
-                robot.driveOdo.turn(targetAngle,5);
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.VIOLET);
-            }
-            if(gamepad1.a && (turningMode == false)){  // turn for auto aim
-                turningMode = true;
-                targetAngle = baseTargetAngle;
-                double currentTheta = robot.driveOdo.updatesThread.positionUpdate.returnOrientation();
-                while((targetAngle - currentTheta) < -180){
-                    targetAngle += 360;
-                }
-                while((targetAngle - currentTheta) > 180){
-                    targetAngle -= 360;
-                }
-                robot.driveOdo.turn(targetAngle,5);
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-            }
-            if(gamepad1.dpad_left && (turningMode == false)){ // turn left 5 degrees
-                turningMode = true;
-                double currentTheta = robot.driveOdo.updatesThread.positionUpdate.returnOrientation();
-                targetAngle = currentTheta - 5;
-                robot.driveOdo.turn(targetAngle,2);
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE_GREEN);
-            }
-            if(gamepad1.dpad_right && (turningMode == false)){ // turn right 5 degrees
-                turningMode = true;
-                double currentTheta = robot.driveOdo.updatesThread.positionUpdate.returnOrientation();
-                targetAngle = currentTheta + 5;
-                robot.driveOdo.turn(targetAngle,2);
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE_GREEN);
-            }
-            if(turningMode){
-                if(robot.driveOdo.isDone()){
-                    turningMode = false;
-                    robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-                }
-                if(Math.abs(gamepad1.left_stick_y) > 0.5 || Math.abs(gamepad1.left_stick_x) > 0.5
-                        ||Math.abs(gamepad1.right_stick_y) > 0.5 || Math.abs(gamepad1.right_stick_x) > 0.5 ){
-                    turningMode = false;
-                    robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
-                }
-            }
-            if(Math.abs(targetAngle-robot.driveOdo.updatesThread.positionUpdate.returnOrientation()) > 4){
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
-            }
-            if(gamepad1.ps){
-                baseTargetAngle = robot.driveOdo.updatesThread.positionUpdate.returnOrientation();
-            }
+
 
             // Drive train speed control:
             if (gamepad1.left_bumper) {
@@ -297,9 +247,7 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Right Back Power:", "%.2f", rightBack);
             telemetry.addData("Launch RPM","%.0f", robot.launcher.getLaunchRPM());
 
-            telemetry.addData("X Position", "%.2f", robot.driveOdo.updatesThread.positionUpdate.returnXInches());
-            telemetry.addData("Y Position", "%.2f", robot.driveOdo.updatesThread.positionUpdate.returnYInches());
-            telemetry.addData("Orientation (Degrees)", "%.2f",robot.driveOdo.updatesThread.positionUpdate.returnOrientation());
+
             //telemetry.addData("Encoder left right horiz", "%5d  %5d   %5d",
             //      robot.driveClassic.leftFrontMotor.getCurrentPosition(),
             //        robot.driveClassic.rightFrontMotor.getCurrentPosition(),
@@ -319,7 +267,6 @@ public class MainTeleOp extends LinearOpMode
             dashboardTelemetry.update();
         }
 
-        robot.driveOdo.updatesThread.stop();
         robot.eyes.stop();
     }
 

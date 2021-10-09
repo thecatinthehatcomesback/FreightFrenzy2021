@@ -50,8 +50,7 @@ public class EasyOpenCVExample extends LinearOpMode
     public void runOpMode()
     {
 
-        //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new SkystoneDeterminationPipeline();
@@ -87,10 +86,17 @@ public class EasyOpenCVExample extends LinearOpMode
 
         while (opModeIsActive())
         {
-            telemetry.addData("Analysis", pipeline.getAnalysis());
+            telemetry.addData("Analysis Right", pipeline.avg1GetAnalysis());
+            telemetry.addData("Analysis Middle", pipeline.avg2GetAnalysis());
+            telemetry.addData("Analysis Left", pipeline.avg3GetAnalysis());
+
+
             telemetry.addData("Position", pipeline.position);
             telemetry.update();
-            dashboardTelemetry.addData("Analysis", pipeline.getAnalysis());
+            dashboardTelemetry.addData("Analysis Right", pipeline.avg1GetAnalysis());
+            dashboardTelemetry.addData("Analysis Middle", pipeline.avg2GetAnalysis());
+            dashboardTelemetry.addData("Analysis Left", pipeline.avg3GetAnalysis());
+
             dashboardTelemetry.addData("Position", pipeline.position);
             dashboardTelemetry.update();
 
@@ -102,18 +108,18 @@ public class EasyOpenCVExample extends LinearOpMode
     @Config
     public static class SkystoneDeterminationPipeline extends OpenCvPipeline
     {
-        public static int regionWidth = 80;
-        public static int regionHeight = 80;
-        //public static int fourRingThreshHold = 150;
-        //public static int oneRingThreshHold = 135;
+        public static int regionWidth = 70;
+        public static int regionHeight = 70;
+
         /*
-         * An enum to define the skystone position
+         * An enum to define the ring position
          */
-        public enum RingPosition
+        public enum duckPosistion
         {
-            FOUR,
-            ONE,
-            NONE
+            LEFT,
+            MIDDLE,
+            RIGHT,
+            NONE,
         }
 
         /*
@@ -125,32 +131,52 @@ public class EasyOpenCVExample extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(245,98);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(130,98);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,98);
+
 
         static int REGION_WIDTH = regionWidth;
         static int REGION_HEIGHT = regionHeight;
 
-        final int FOUR_RING_THRESHOLD = 80;
-        final int ONE_RING_THRESHOLD = 55;
+        final int DUCK_THRESHOLD = 40;
 
-        Point region1_pointA = new Point(
+        Point right_region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
                 REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(
+        Point right_region1_pointB = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth,
                 REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight);
+
+        Point middle_region2_pointA = new Point(
+                REGION2_TOPLEFT_ANCHOR_POINT.x,
+                REGION2_TOPLEFT_ANCHOR_POINT.y);
+        Point middle_region2_pointB = new Point(
+                REGION2_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                REGION2_TOPLEFT_ANCHOR_POINT.y+regionHeight);
+
+        Point left_region3_pointA = new Point(
+                REGION3_TOPLEFT_ANCHOR_POINT.x,
+                REGION3_TOPLEFT_ANCHOR_POINT.y);
+        Point left_region3_pointB = new Point(
+                REGION3_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                REGION3_TOPLEFT_ANCHOR_POINT.y+regionHeight);
 
         /*
          * Working variables
          */
         Mat region1_Cb;
+        Mat region2_Cb;
+        Mat region3_Cb;
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
         int avg1;
+        int avg2;
+        int avg3;
         Mat hsv = new Mat();
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile RingPosition position = RingPosition.FOUR;
+        private volatile duckPosistion position = duckPosistion.NONE;
 
         /*
          * This function takes the RGB frame, converts to YCrCb,
@@ -174,48 +200,71 @@ public class EasyOpenCVExample extends LinearOpMode
         {
             inputToCb(firstFrame);
 
-            region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
+            region1_Cb = Cb.submat(new Rect(right_region1_pointA, right_region1_pointB));
+            region2_Cb = Cb.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
+            region3_Cb = Cb.submat(new Rect(left_region3_pointA,left_region3_pointB));
         }
 
         @Override
         public Mat processFrame(Mat input)
         {
-            region1_pointB.x = REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth;
-            region1_pointB.y = REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight;
+            right_region1_pointB.x = REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth;
+            right_region1_pointB.y = REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight;
+
+            middle_region2_pointB.x = REGION2_TOPLEFT_ANCHOR_POINT.x + regionWidth;
+            middle_region2_pointB.y = REGION2_TOPLEFT_ANCHOR_POINT.y + regionHeight;
+
+            left_region3_pointB.x = REGION3_TOPLEFT_ANCHOR_POINT.x + regionWidth;
+            left_region3_pointB.y = REGION3_TOPLEFT_ANCHOR_POINT.y + regionHeight;
+
 
             inputToCb(input);
 
             avg1 = (int) Core.mean(region1_Cb).val[0];
+            avg2 = (int) Core.mean(region2_Cb).val[0];
+            avg3 = (int) Core.mean(region3_Cb).val[0];
+
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
+                    right_region1_pointA, // First point which defines the rectangle
+                    right_region1_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
-
-            position = RingPosition.FOUR; // Record our analysis
-            if(avg1 > FOUR_RING_THRESHOLD){
-                position = RingPosition.FOUR;
-            }else if (avg1 > ONE_RING_THRESHOLD){
-                position = RingPosition.ONE;
-            }else {
-                position = RingPosition.NONE;
-            }
-
             Imgproc.rectangle(
                     input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
+                    middle_region2_pointA, // First point which defines the rectangle
+                    middle_region2_pointB, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    left_region3_pointA, // First point which defines the rectangle
+                    left_region3_pointB, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
+
+            position = duckPosistion.NONE; // Record our analysis
+            if(avg1 > avg2 && avg1 > avg3){
+                position = duckPosistion.RIGHT;
+            }else if (avg2 > avg1 && avg2 > avg3){
+                position = duckPosistion.MIDDLE;
+            }else if(avg3 > avg1 && avg3 > avg2){
+                position = duckPosistion.LEFT;
+            }
+
+
+
 
             return input;
         }
 
-        public int getAnalysis()
-        {
-            return avg1;
+        public int avg1GetAnalysis() { return avg1; }
+        public int avg2GetAnalysis(){
+            return avg2;
+        }
+        public int avg3GetAnalysis(){
+            return avg3;
         }
     }
 }

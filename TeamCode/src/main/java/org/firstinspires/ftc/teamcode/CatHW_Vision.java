@@ -67,6 +67,8 @@ public class CatHW_Vision extends CatHW_Subsystem
          * The core values which define the location and size of the sample regions
          */
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(160,10);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(130,98);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,98);
 
         static int REGION_WIDTH = regionWidth;
         static int REGION_HEIGHT = regionHeight;
@@ -81,27 +83,47 @@ public class CatHW_Vision extends CatHW_Subsystem
                 REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth,
                 REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight);
 
+        Point middle_region2_pointA = new Point(
+                REGION2_TOPLEFT_ANCHOR_POINT.x,
+                REGION2_TOPLEFT_ANCHOR_POINT.y);
+        Point middle_region2_pointB = new Point(
+                REGION2_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                REGION2_TOPLEFT_ANCHOR_POINT.y+regionHeight);
+
+        Point left_region3_pointA = new Point(
+                REGION3_TOPLEFT_ANCHOR_POINT.x,
+                REGION3_TOPLEFT_ANCHOR_POINT.y);
+        Point left_region3_pointB = new Point(
+                REGION3_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                REGION3_TOPLEFT_ANCHOR_POINT.y+regionHeight);
+
         /*
          * Working variables
          */
         Mat region1_Cb;
+        Mat region2_Cb;
+        Mat region3_Cb;
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
         int avg1;
+        int avg2;
+        int avg3;
         Mat hsv = new Mat();
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile numRings position = numRings.FOUR;
+        private volatile duckPosistion position = duckPosistion.NONE;
 
 
         /* Enums */
-        enum numRings {
+        public enum duckPosistion
+        {
+            LEFT,
+            MIDDLE,
+            RIGHT,
             NONE,
-            ONE,
-            FOUR
         }
-        private Deque<numRings> ringValues;
-        public numRings avgValue = numRings.ONE;
+        private Deque<duckPosistion> ringValues;
+        public duckPosistion avgValue = duckPosistion.NONE;
 
         @Override
         public void init(Mat firstFrame)
@@ -109,6 +131,8 @@ public class CatHW_Vision extends CatHW_Subsystem
             inputToCb(firstFrame);
 
             region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
+            region2_Cb = Cb.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
+            region3_Cb = Cb.submat(new Rect(left_region3_pointA,left_region3_pointB));
 
         }
 
@@ -121,6 +145,8 @@ public class CatHW_Vision extends CatHW_Subsystem
             inputToCb(input);
 
             avg1 = (int) Core.mean(region1_Cb).val[0];
+            avg2 = (int) Core.mean(region2_Cb).val[0];
+            avg3 = (int) Core.mean(region3_Cb).val[0];
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -129,13 +155,13 @@ public class CatHW_Vision extends CatHW_Subsystem
                     BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
 
-            position = numRings.FOUR; // Record our analysis
-            if(avg1 > FOUR_RING_THRESHOLD){
-                position = numRings.FOUR;
-            }else if (avg1 > ONE_RING_THRESHOLD){
-                position = numRings.ONE;
-            }else {
-                position = numRings.NONE;
+            position = duckPosistion.NONE; // Record our analysis
+            if(avg1 > avg2 && avg1 > avg3){
+                position = duckPosistion.RIGHT;
+            }else if (avg2 > avg1 && avg2 > avg3){
+                position = duckPosistion.MIDDLE;
+            }else if(avg3 > avg1 && avg3 > avg2){
+                position = duckPosistion.LEFT;
             }
 
 
@@ -168,9 +194,12 @@ public class CatHW_Vision extends CatHW_Subsystem
 
 
 
-        public int getAnalysis()
-        {
-            return avg1;
+        public int avg1GetAnalysis() { return avg1; }
+        public int avg2GetAnalysis(){
+            return avg2;
+        }
+        public int avg3GetAnalysis(){
+            return avg3;
         }
 
     }
