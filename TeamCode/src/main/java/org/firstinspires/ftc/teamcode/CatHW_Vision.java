@@ -76,10 +76,10 @@ public class CatHW_Vision extends CatHW_Subsystem
         final int FOUR_RING_THRESHOLD = 80;
         final int ONE_RING_THRESHOLD = 40;
 
-        Point region1_pointA = new Point(
+        Point right_region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
                 REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(
+        Point right_region1_pointB = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth,
                 REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight);
 
@@ -130,7 +130,7 @@ public class CatHW_Vision extends CatHW_Subsystem
         {
             inputToCb(firstFrame);
 
-            region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
+            region1_Cb = Cb.submat(new Rect(right_region1_pointA, right_region1_pointB));
             region2_Cb = Cb.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
             region3_Cb = Cb.submat(new Rect(left_region3_pointA,left_region3_pointB));
 
@@ -139,8 +139,8 @@ public class CatHW_Vision extends CatHW_Subsystem
         @Override
         public Mat processFrame(Mat input)
         {
-            region1_pointB.x = REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth;
-            region1_pointB.y = REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight;
+            right_region1_pointB.x = REGION1_TOPLEFT_ANCHOR_POINT.x + regionWidth;
+            right_region1_pointB.y = REGION1_TOPLEFT_ANCHOR_POINT.y + regionHeight;
 
             inputToCb(input);
 
@@ -150,10 +150,22 @@ public class CatHW_Vision extends CatHW_Subsystem
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
+                    right_region1_pointA, // First point which defines the rectangle
+                    right_region1_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    middle_region2_pointA, // First point which defines the rectangle
+                    middle_region2_pointB, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    left_region3_pointA, // First point which defines the rectangle
+                    left_region3_pointB, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
 
             position = duckPosistion.NONE; // Record our analysis
             if(avg1 > avg2 && avg1 > avg3){
@@ -171,17 +183,20 @@ public class CatHW_Vision extends CatHW_Subsystem
                 ringValues.removeFirst();
             }
             ringValues.add(position);
-            if (Collections.frequency(ringValues, numRings.ONE) > Collections.frequency(ringValues, numRings.FOUR) &&
-                    Collections.frequency(ringValues, numRings.ONE) > Collections.frequency(ringValues, numRings.NONE)) {
+            if (Collections.frequency(ringValues, duckPosistion.LEFT) > Collections.frequency(ringValues, duckPosistion.RIGHT) &&
+                    Collections.frequency(ringValues, duckPosistion.LEFT) > Collections.frequency(ringValues, duckPosistion.MIDDLE)) {
                 // If the amount of INSIDE readings is the most in the past 30 readings, return INSIDE.
-                avgValue= numRings.ONE;
-            } else if (Collections.frequency(ringValues, numRings.FOUR) > Collections.frequency(ringValues, numRings.ONE) &&
-                    Collections.frequency(ringValues, numRings.FOUR) > Collections.frequency(ringValues, numRings.NONE)) {
+                avgValue= duckPosistion.LEFT;
+            } else if (Collections.frequency(ringValues, duckPosistion.RIGHT) > Collections.frequency(ringValues, duckPosistion.LEFT) &&
+                    Collections.frequency(ringValues, duckPosistion.RIGHT) > Collections.frequency(ringValues, duckPosistion.MIDDLE)) {
                 // If the amount of CENTER readings is the most in the past 30 readings, return CENTER.
-                avgValue= numRings.FOUR;
-            } else {
+                avgValue= duckPosistion.RIGHT;
+            } else if (Collections.frequency(ringValues, duckPosistion.MIDDLE) > Collections.frequency(ringValues, duckPosistion.RIGHT) &&
+                    Collections.frequency(ringValues, duckPosistion.MIDDLE) > Collections.frequency(ringValues, duckPosistion.LEFT)){
                 // Just return back OUTSIDE since it is the last possible value.
-               avgValue= numRings.NONE;
+               avgValue= duckPosistion.MIDDLE;
+            }else{
+                avgValue = duckPosistion.NONE;
             }
 
             return input;
@@ -414,7 +429,7 @@ public class CatHW_Vision extends CatHW_Subsystem
      *
      * @return which SkyStone position is the most likely.
      */
-    public UltimateGoalPipeline.numRings getNumRings() {
+    public UltimateGoalPipeline.duckPosistion getDuckPos() {
         return pipeline.avgValue;
     }
 

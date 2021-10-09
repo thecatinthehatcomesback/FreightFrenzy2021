@@ -108,26 +108,20 @@ public class MainAutonomous extends LinearOpMode
                 delayTimer.reset();
             }
 
-            //Allow the intake to run in autonomous
-            robot.jaws.setJawPower(gamepad1.right_trigger - (gamepad1.left_trigger * 0.3));
-            if (robot.jaws.getJawPower() > 0.05) {
-                robot.jaws.setTransferPower(0.6);
-            } else {
-                robot.jaws.setTransferPower(0);
-            }
+
 
 
             /*
              * LED code:
              */
 
-            if (robot.eyes.getNumRings() == CatHW_Vision.UltimateGoalPipeline.numRings.NONE) {
+            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.MIDDLE) {
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
             }
-            if (robot.eyes.getNumRings() == CatHW_Vision.UltimateGoalPipeline.numRings.ONE) {
+            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.LEFT) {
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
             }
-            if (robot.eyes.getNumRings() == CatHW_Vision.UltimateGoalPipeline.numRings.FOUR) {
+            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT) {
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_PARTY_PALETTE);
             }
 
@@ -148,12 +142,12 @@ public class MainAutonomous extends LinearOpMode
             } else {
                 telemetry.addData("Goal: ", "High Goal");
             }
-            telemetry.addData("Num of Rings", "%s", robot.eyes.getNumRings().toString());
+            telemetry.addData("Num of Rings", "%s", robot.eyes.getDuckPos().toString());
             telemetry.addData("X/Y/Theta Position", "%.2f %.2f %.2f");
 
 
-            dashboardTelemetry.addData("Num of Rings", "%s", robot.eyes.getNumRings().toString());
-            dashboardTelemetry.addData("Analysis", "%d", robot.eyes.pipeline.getAnalysis());
+            dashboardTelemetry.addData("Num of Rings", "%s", robot.eyes.getDuckPos().toString());
+            dashboardTelemetry.addData("Analysis", "%d", robot.eyes.pipeline.avg1GetAnalysis());
             dashboardTelemetry.update();
 
             telemetry.update();
@@ -165,7 +159,7 @@ public class MainAutonomous extends LinearOpMode
              */
 
         }
-        CatHW_Vision.UltimateGoalPipeline.numRings numRings = robot.eyes.getNumRings();
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion numRings = robot.eyes.getDuckPos();
 
 
 

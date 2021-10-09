@@ -114,7 +114,7 @@ public class EasyOpenCVExample extends LinearOpMode
         /*
          * An enum to define the ring position
          */
-        public enum duckPosistion
+        public enum duckPosition
         {
             LEFT,
             MIDDLE,
@@ -176,7 +176,7 @@ public class EasyOpenCVExample extends LinearOpMode
         Mat hsv = new Mat();
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile duckPosistion position = duckPosistion.NONE;
+        private volatile duckPosition position = duckPosition.NONE;
 
         /*
          * This function takes the RGB frame, converts to YCrCb,
@@ -244,13 +244,13 @@ public class EasyOpenCVExample extends LinearOpMode
                     BLUE, // The color the rectangle is drawn in
                     2); // Negative thickness means solid fill
 
-            position = duckPosistion.NONE; // Record our analysis
+            position = duckPosition.NONE; // Record our analysis
             if(avg1 > avg2 && avg1 > avg3){
-                position = duckPosistion.RIGHT;
+                position = duckPosition.RIGHT;
             }else if (avg2 > avg1 && avg2 > avg3){
-                position = duckPosistion.MIDDLE;
+                position = duckPosition.MIDDLE;
             }else if(avg3 > avg1 && avg3 > avg2){
-                position = duckPosistion.LEFT;
+                position = duckPosition.LEFT;
             }
 
 
