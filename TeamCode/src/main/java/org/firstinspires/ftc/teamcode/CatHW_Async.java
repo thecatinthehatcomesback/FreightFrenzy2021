@@ -34,7 +34,7 @@ public class CatHW_Async
     /** Other Hardware subSystems */
     CatHW_Jaws jaws = null;
     //CatHW_Claw claw = null;
-    CatHW_DriveClassic driveClassic = null;
+    CatHW_Drive drive = null;
 
     CatHW_Tail tail = null;
     CatHW_Launcher launcher = null;
@@ -55,10 +55,9 @@ public class CatHW_Async
      *
      * @param ahwMap is the robot's hardware map object.
      * @param theOpMode for Linear OpMode usage.
-     * @param isInitOdo in case using odometry style drive.
      * @throws InterruptedException in case of error.
      */
-    public void init(HardwareMap ahwMap, LinearOpMode theOpMode, boolean isInitOdo, boolean useVuforia)
+    public void init(HardwareMap ahwMap, LinearOpMode theOpMode, boolean useVuforia)
             throws InterruptedException {
 
         // Save a reference to hardware map and opMode
@@ -93,15 +92,10 @@ public class CatHW_Async
         lights = CatHW_Lights.getInstanceAndInit(this);
         lights.init();
 
-        if (isInitOdo) {
-            opMode.telemetry.addData("Initialize", "DriveOdo...");
-            opMode.telemetry.update();
-
-        }
-        opMode.telemetry.addData("Initialize", "DriveClassic...");
+        opMode.telemetry.addData("Initialize", "Drive...");
         opMode.telemetry.update();
-        driveClassic = new CatHW_DriveClassic(this);
-        driveClassic.init();
+        drive = new CatHW_Drive(this);
+        drive.init();
 
         opMode.telemetry.addData("Initialize", "Eyes...");
         opMode.telemetry.update();
