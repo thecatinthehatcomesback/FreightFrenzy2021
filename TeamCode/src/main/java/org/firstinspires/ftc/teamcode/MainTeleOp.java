@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,8 +49,8 @@ public class MainTeleOp extends LinearOpMode
 
 
         // Initialize the hardware
-        robot.init(hardwareMap, this, true, false);
-        robot.driveClassic.IMU_Init();
+        robot.init(hardwareMap, this, true);
+        robot.drive.IMU_Init();
 
         // Finished!  Now tell the driver...
         telemetry.addData("Status", "Initialized...  BOOM!");
@@ -121,7 +120,7 @@ public class MainTeleOp extends LinearOpMode
                     gamepad1.left_stick_x;
 
             // Calculate the scale factor:
-            SF = robot.driveClassic.findScalor(leftFront, rightFront, leftBack, rightBack);
+            SF = robot.drive.findScalor(leftFront, rightFront, leftBack, rightBack);
             // Set powers to each setDrivePowers motor:
             leftFront = leftFront * SF * driveSpeed;
             rightFront = rightFront * SF * driveSpeed;
@@ -130,7 +129,7 @@ public class MainTeleOp extends LinearOpMode
                 // DRIVE!!!
             if (!turningMode) {
 
-                robot.driveClassic.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
+                robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
             // Jaws Control:
             if (gamepad1.left_bumper) {
