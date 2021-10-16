@@ -108,14 +108,13 @@ public class EasyOpenCVExample extends LinearOpMode
     @Config
     public static class SkystoneDeterminationPipeline extends OpenCvPipeline
     {
-        public static int regionWidth = 70;
-        public static int regionHeight = 70;
+        public static int regionWidth = 60;
+        public static int regionHeight = 60;
 
         /*
          * An enum to define the ring position
          */
-        public enum duckPosition
-        {
+        public enum duckPosition {
             LEFT,
             MIDDLE,
             RIGHT,
@@ -169,11 +168,22 @@ public class EasyOpenCVExample extends LinearOpMode
         Mat region2_Cb;
         Mat region3_Cb;
         Mat YCrCb = new Mat();
-        Mat Cb = new Mat();
+        Mat Cr = new Mat();
+        Mat Cr2 = new Mat();
+        Mat Cr3 = new Mat();
+
         int avg1;
         int avg2;
         int avg3;
         Mat hsv = new Mat();
+        Scalar lowHSV1 = new Scalar(0, 100, 20); // lower bound HSV for yellow
+        Scalar highHSV1 = new Scalar(10,255,255); // higher bound HSV for yellow
+
+        Scalar lowHSV2 = new Scalar(160, 100, 20); // lower bound HSV for yellow
+        Scalar highHSV2 = new Scalar(179,255,255); // higher bound HSV for yellow
+
+
+
 
         // Volatile since accessed by OpMode thread w/o synchronization
         private volatile duckPosition position = duckPosition.NONE;
@@ -191,8 +201,13 @@ public class EasyOpenCVExample extends LinearOpMode
         void inputToCb(Mat input)
         {
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-            Core.extractChannel(hsv, Cb, 1);
+            Core.extractChannel(hsv, Cr, 0);
+            Core.inRange(hsv,lowHSV1,highHSV1,Cr);
+            Core.inRange(hsv,lowHSV2,highHSV2,Cr);
+
+
         }
+
 
 
         @Override
@@ -200,9 +215,9 @@ public class EasyOpenCVExample extends LinearOpMode
         {
             inputToCb(firstFrame);
 
-            region1_Cb = Cb.submat(new Rect(right_region1_pointA, right_region1_pointB));
-            region2_Cb = Cb.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
-            region3_Cb = Cb.submat(new Rect(left_region3_pointA,left_region3_pointB));
+            region1_Cb = Cr.submat(new Rect(right_region1_pointA, right_region1_pointB));
+            region2_Cb = Cr.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
+            region3_Cb = Cr.submat(new Rect(left_region3_pointA,left_region3_pointB));
         }
 
         @Override
@@ -219,11 +234,13 @@ public class EasyOpenCVExample extends LinearOpMode
 
 
             inputToCb(input);
+            Mat mat = new Mat();
+
+            Mat thresh = new Mat();
 
             avg1 = (int) Core.mean(region1_Cb).val[0];
             avg2 = (int) Core.mean(region2_Cb).val[0];
             avg3 = (int) Core.mean(region3_Cb).val[0];
-
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -252,6 +269,7 @@ public class EasyOpenCVExample extends LinearOpMode
             }else if(avg3 > avg1 && avg3 > avg2){
                 position = duckPosition.LEFT;
             }
+
 
 
 
