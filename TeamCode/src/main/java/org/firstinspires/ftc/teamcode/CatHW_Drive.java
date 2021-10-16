@@ -496,9 +496,8 @@ public class CatHW_Drive   extends CatHW_Subsystem
      * @param degrees that the robot needs to TURN to.
      * @param timeoutS is how much time needs to pass before the robot moves onto the next step.
      *                 This is used/useful for stall outs.
-     * @throws InterruptedException in case of error.
      */
-    public void mecTurn(double power, int degrees, double timeoutS) throws InterruptedException {
+    public void mecTurn(double power, int degrees, double timeoutS) {
         mecTurn(power, degrees, timeoutS, TURN_MODE.SPIN);
     }
 
@@ -512,7 +511,6 @@ public class CatHW_Drive   extends CatHW_Subsystem
      * @param turnMode can be SPIN or TANK.
      *                 -SPIN will TURN with a center of rotation at the center of the robot.
      *                 -TANK will TURN with a center of rotation at the center of one side of robot.
-     * @throws InterruptedException in case of error.
      */
     public void mecTurn(double power, int degrees, double timeoutS, TURN_MODE turnMode) {
         /*
@@ -563,7 +561,20 @@ public class CatHW_Drive   extends CatHW_Subsystem
             }
         }
     }
+    public void quickDriveHorizontal( double power, double distance, double timeoutS){
 
+        mecDriveHorizontal(power,distance,timeoutS);
+        waitUntilDone();
+    }
+    public void quickDriveVertical( double power, double distance, double timeoutS){
+
+        mecDriveVertical(power,distance,timeoutS);
+        waitUntilDone();
+    }
+    public void quickTurn(double power, int degrees, double timeoutS){
+        mecTurn(power, degrees, timeoutS);
+        waitUntilDone();
+    }
 
 
     //----------------------------------------------------------------------------------------------

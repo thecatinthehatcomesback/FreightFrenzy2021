@@ -11,7 +11,7 @@ package org.firstinspires.ftc.teamcode;
  *
  * @author FTC Team #10273, The Cat in the Hat Comes Back
  */
-public class CatThreadAsync extends Thread
+public class  CatThreadAsync extends Thread
 {
     /** Class that handles all the waitUntilDone() method calls. */
     private CatHW_Subsystem subsystem;
