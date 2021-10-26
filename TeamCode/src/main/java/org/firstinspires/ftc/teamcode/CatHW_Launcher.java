@@ -39,9 +39,7 @@ public class CatHW_Launcher extends CatHW_Subsystem
 
 
     /* Constructor */
-    public CatHW_Launcher(CatHW_Async mainHardware) {
-        super(mainHardware);
-    }
+    public CatHW_Launcher(CatHW_Async mainHardware) { super(mainHardware);}
 
 
     /**

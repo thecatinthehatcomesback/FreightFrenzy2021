@@ -40,6 +40,7 @@ public class CatHW_Async
     CatHW_Launcher launcher = null;
     CatHW_Vision eyes = null;
     CatHW_Lights lights = null;
+    CatHW_Carousel carousel = null;
 
 
 
@@ -104,6 +105,11 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "All Done...  BOOM!");
         opMode.telemetry.update();
+
+        opMode.telemetry.addData("Initialize", "Carousel...");
+        opMode.telemetry.update();
+        carousel = new CatHW_Carousel(this);
+        carousel.init();
     }
 
     //----------------------------------------------------------------------------------------------
