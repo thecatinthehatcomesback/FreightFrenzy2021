@@ -85,7 +85,6 @@ public class MainTeleOp extends LinearOpMode
         buttontime.reset();
 
         robot.tail.openGrabber();
-        robot.launcher.togglePower();
 
 
         // Run infinitely until the end of the match (driver presses STOP)
@@ -149,35 +148,7 @@ public class MainTeleOp extends LinearOpMode
             //--------------------------------------------------------------------------------------
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
-            if(gamepad2.dpad_up && buttontime.milliseconds()>250) {
-                robot.launcher.increasePower();
-                buttontime.reset();
-            }
-            if(gamepad2.dpad_down && buttontime.milliseconds() > 250){
-                robot.launcher.decreasePower();
-                buttontime.reset();
-            }
-            if (gamepad2.x) {
-                robot.launcher.presetPowerShot();
-            }
-            if (gamepad2.y) {
-                robot.launcher.presetGoal();
-            }
-            if(gamepad2.guide && buttontime.milliseconds() > 250){
-                robot.launcher.togglePower();
-                buttontime.reset();
-            }
-            if(gamepad2.dpad_left) {
-                robot.launcher.aimL();
-            } else if(gamepad2.dpad_right) {
-                robot.launcher.aimHigh();
-            }
-            robot.launcher.updatePower();
-            if(gamepad2.b){
-                robot.launcher.openLauncher();
-            } else {
-                robot.launcher.closeLauncher();
-            }
+
             // Tail/Stacker lift motor controls:
             if(-gamepad2.left_stick_y>.75){
                 robot.tail.setArmUp();
@@ -244,7 +215,6 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Right Front Power:", "%.2f", rightFront);
             telemetry.addData("Left Back Power:", "%.2f", leftBack);
             telemetry.addData("Right Back Power:", "%.2f", rightBack);
-            telemetry.addData("Launch RPM","%.0f", robot.launcher.getLaunchRPM());
 
 
             //telemetry.addData("Encoder left right horiz", "%5d  %5d   %5d",
@@ -256,10 +226,7 @@ public class MainTeleOp extends LinearOpMode
 
             telemetry.update();
 
-            dashboardTelemetry.addData("set RPM target", "%.0f", robot.launcher.getLaunchRPM());
-            dashboardTelemetry.addData("rpm vel","%.1f" ,robot.launcher.launcher.getVelocity()* 60 / 28);
-            PIDFCoefficients cof = robot.launcher.launcher.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
-            dashboardTelemetry.addData("PID running","%.5f  %.5f  %.5f  %.5f", cof.p, cof.i, cof.d, cof.f);
+
             dashboardTelemetry.addData("PID set","%.5f  %.5f  %.5f  %.5f",RobotConstants.LAUNCH_PID.p,RobotConstants.LAUNCH_PID.i,RobotConstants.LAUNCH_PID.d,RobotConstants.LAUNCH_PID.f);
             dashboardTelemetry.addData("High","%4d ",2800);
             dashboardTelemetry.addData("Low","%4d ",1800);

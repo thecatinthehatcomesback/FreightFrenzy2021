@@ -86,7 +86,6 @@ public class CatHW_Async
         opMode.telemetry.addData("Initialize", "Launcher...");
         opMode.telemetry.update();
         launcher = new CatHW_Launcher(this);
-        launcher.init();
 
         opMode.telemetry.addData("Initialize", "Lights...");
         opMode.telemetry.update();

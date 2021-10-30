@@ -55,8 +55,8 @@ public class CatHW_Vision extends CatHW_Subsystem
 {
     public static class UltimateGoalPipeline extends OpenCvPipeline
     {
-        public static int regionWidth = 80;
-        public static int regionHeight = 50;
+        public static int regionWidth = 60;
+        public static int regionHeight = 60;
         /*
          * Some color constants
          */
@@ -109,6 +109,12 @@ public class CatHW_Vision extends CatHW_Subsystem
         int avg2;
         int avg3;
         Mat hsv = new Mat();
+
+        Scalar lowHSV1 = new Scalar(0, 100, 20); // lower bound HSV for yellow
+        Scalar highHSV1 = new Scalar(10,255,255); // higher bound HSV for yellow
+
+        Scalar lowHSV2 = new Scalar(160, 100, 20); // lower bound HSV for yellow
+        Scalar highHSV2 = new Scalar(179,255,255); // higher bound HSV for yellow
 
         // Volatile since accessed by OpMode thread w/o synchronization
         private volatile duckPosistion position = duckPosistion.NONE;
@@ -204,18 +210,19 @@ public class CatHW_Vision extends CatHW_Subsystem
         void inputToCb(Mat input)
         {
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-            Core.extractChannel(hsv, Cb, 1);
+            Core.extractChannel(hsv, Cb, 0);
+            Core.inRange(hsv,lowHSV1,highHSV1,Cb);
+            Core.inRange(hsv,lowHSV2,highHSV2,Cb);
         }
 
 
 
         public int avg1GetAnalysis() { return avg1; }
-        public int avg2GetAnalysis(){
-            return avg2;
-        }
+        public int avg2GetAnalysis(){ return avg2; }
         public int avg3GetAnalysis(){
             return avg3;
         }
+
 
     }
 

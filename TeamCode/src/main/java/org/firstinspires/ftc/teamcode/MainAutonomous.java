@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 */
 
+import android.widget.Switch;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -147,7 +149,9 @@ public class MainAutonomous extends LinearOpMode
 
 
             dashboardTelemetry.addData("Num of Rings", "%s", robot.eyes.getDuckPos().toString());
-            dashboardTelemetry.addData("Analysis", "%d", robot.eyes.pipeline.avg1GetAnalysis());
+            telemetry.addData("Analysis Right", robot.eyes.pipeline.avg1GetAnalysis());
+            telemetry.addData("Analysis Middle", robot.eyes.pipeline.avg2GetAnalysis());
+            telemetry.addData("Analysis Left", robot.eyes.pipeline.avg3GetAnalysis());
             dashboardTelemetry.update();
 
             telemetry.update();
@@ -159,7 +163,6 @@ public class MainAutonomous extends LinearOpMode
              */
 
         }
-        CatHW_Vision.UltimateGoalPipeline.duckPosistion numRings = robot.eyes.getDuckPos();
 
 
 
@@ -169,13 +172,90 @@ public class MainAutonomous extends LinearOpMode
          */
 
 
-        /*
-         * Init the IMU after play so that it is not offset after
-         * remaining idle for a minute or two...
-         */
-
-
-
 
 }
+    public void blueLeft(){
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        switch (duckPos){
+            case NONE:
+                break;
+            case LEFT:
+                driveLeft();
+                break;
+            case MIDDLE:
+                driveMiddle();
+                break;
+            case RIGHT:
+                driveRight();
+                break;
+        }
+
+    }
+    public void blueRight(){
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        switch (duckPos){
+            case NONE:
+                break;
+            case LEFT:
+                driveLeft();
+                break;
+            case MIDDLE:
+                driveMiddle();
+                break;
+            case RIGHT:
+                driveRight();
+                break;
+        }
+
+    }
+    public void redLeft(){
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        switch (duckPos){
+            case NONE:
+                break;
+            case LEFT:
+                driveLeft();
+                break;
+            case MIDDLE:
+                driveMiddle();
+                break;
+            case RIGHT:
+                driveRight();
+                break;
+        }
+
+    }
+    public void redRight(){
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        switch (duckPos){
+            case NONE:
+                break;
+            case LEFT:
+                driveLeft();
+                break;
+            case MIDDLE:
+                driveMiddle();
+                break;
+            case RIGHT:
+                driveRight();
+                break;
+        }
+
+    }
+    public void driveLeft(){
+
+    }
+
+    public void driveMiddle(){
+
+    }
+
+    public void driveRight(){
+
+    }
+
 }
