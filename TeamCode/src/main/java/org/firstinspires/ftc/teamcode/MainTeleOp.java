@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -49,7 +51,7 @@ public class MainTeleOp extends LinearOpMode
 
 
         // Initialize the hardware
-        robot.init(hardwareMap, this, true);
+        robot.init(hardwareMap, this, false);
         robot.drive.IMU_Init();
 
         // Finished!  Now tell the driver...
@@ -60,9 +62,9 @@ public class MainTeleOp extends LinearOpMode
         waitForStart();
 
         if (CatHW_Async.isRedAlliance) {
-            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
+            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
         } else {
-            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
+            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
         }
 
         // Go! (Presses PLAY)
@@ -77,8 +79,6 @@ public class MainTeleOp extends LinearOpMode
         boolean endGame = false;
         boolean under10Sec = false;
         boolean turningMode = false;
-        double targetAngle = 35;
-        double baseTargetAngle = 35;
 
 
         ElapsedTime buttontime = new ElapsedTime();
@@ -149,21 +149,7 @@ public class MainTeleOp extends LinearOpMode
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
 
-            // Tail/Stacker lift motor controls:
-            if(-gamepad2.left_stick_y>.75){
-                robot.tail.setArmUp();
-            } else if(-gamepad2.left_stick_y<-.75){
-                robot.tail.setArmDown();
-            } else if(gamepad2.left_stick_x<-.75){
-                robot.tail.setArmMiddle();
-            }
-            robot.tail.checkMotor();
-
-            // Open and closing the Grabber
-            if (gamepad2.a && buttontime.milliseconds() > 1000) {
-                robot.tail.toggleGrab();
-                buttontime.reset();
-            }
+            
 
 
 

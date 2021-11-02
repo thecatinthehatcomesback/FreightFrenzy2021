@@ -37,7 +37,6 @@ public class CatHW_Async
     CatHW_Drive drive = null;
 
     CatHW_Tail tail = null;
-    CatHW_Launcher launcher = null;
     CatHW_Vision eyes = null;
     CatHW_Lights lights = null;
     CatHW_Carousel carousel = null;
@@ -85,7 +84,6 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Launcher...");
         opMode.telemetry.update();
-        launcher = new CatHW_Launcher(this);
 
         opMode.telemetry.addData("Initialize", "Lights...");
         opMode.telemetry.update();

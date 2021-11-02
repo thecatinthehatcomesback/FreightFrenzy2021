@@ -105,10 +105,7 @@ public class MainAutonomous extends LinearOpMode
                 }
                 delayTimer.reset();
             }
-            if (gamepad1.b && (delayTimer.seconds() > 0.8)) {
-                isPowerShot = !isPowerShot;
-                delayTimer.reset();
-            }
+
 
 
 
