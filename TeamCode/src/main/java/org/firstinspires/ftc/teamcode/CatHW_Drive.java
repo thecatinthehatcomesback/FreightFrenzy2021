@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -37,8 +38,9 @@ public class CatHW_Drive   extends CatHW_Subsystem
 
     // Wheel measurement constants:
     private static final double COUNTS_PER_REVOLUTION = (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
+    private static final double DRIVE_GEAR_RATIO = 18.0 / 16.0 * 1.2;
     private static final double WHEEL_DIAMETER_INCHES = 96 / 25.4;   // 96mm converted to inches
-    static final double COUNTS_PER_INCH = COUNTS_PER_REVOLUTION / (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double COUNTS_PER_INCH = COUNTS_PER_REVOLUTION * DRIVE_GEAR_RATIO / (WHEEL_DIAMETER_INCHES * Math.PI);
 
 
     /* Public OpMode members. */
@@ -111,10 +113,11 @@ public class CatHW_Drive   extends CatHW_Subsystem
         rightRearMotor = hwMap.dcMotor.get("right_rear_motor");
 
         // Define motor directions: //
-        leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        leftRearMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
+        leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftRearMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightRearMotor.setDirection(DcMotor.Direction.FORWARD);
+
 
         // Define motor zero power behavior: //
         setDriveToBrake();
@@ -366,10 +369,10 @@ public class CatHW_Drive   extends CatHW_Subsystem
             // Set the motors to travel towards their desired targets.
             resetDriveEncoders();
             setDriveRunToPosition();
-            leftFrontMotor.setTargetPosition(newLeftFrontTarget);
-            rightFrontMotor.setTargetPosition(newRightFrontTarget);
-            leftRearMotor.setTargetPosition(newLeftBackTarget);
-            rightRearMotor.setTargetPosition(newRightBackTarget);
+            leftFrontMotor.setTargetPosition(-newLeftFrontTarget);
+            rightFrontMotor.setTargetPosition(-newRightFrontTarget);
+            leftRearMotor.setTargetPosition(-newLeftBackTarget);
+            rightRearMotor.setTargetPosition(-newRightBackTarget);
 
             // Reset the timeout time and start motion.
             runTime.reset();
@@ -533,7 +536,7 @@ public class CatHW_Drive   extends CatHW_Subsystem
             runTime.reset();
 
             // Log message:
-            Log.d("catbot", String.format("Start TURN...  target %d, current %d  %s",
+            Log.d("catbot", String.format("Start TURN...  target %d, current %.1f  %s",
                     targetAngleZ, getCurrentAngle(), clockwiseTurn ?"CW":"CCW"));
 
 
@@ -637,7 +640,7 @@ public class CatHW_Drive   extends CatHW_Subsystem
                 float zVal = getCurrentAngle();
 
                 // Log message:
-                Log.d("catbot", String.format("TURN  target %d, current %d  %s",
+                Log.d("catbot", String.format("TURN  target %d, current %.1f  %s",
                         targetAngleZ, zVal, clockwiseTurn ? "CW": "CCW"));
 
                 if ((zVal <= targetAngleZ) && (!clockwiseTurn)) {

@@ -56,7 +56,7 @@ public class CatHW_Vision extends CatHW_Subsystem
     public static class UltimateGoalPipeline extends OpenCvPipeline
     {
         public static int regionWidth = 60;
-        public static int regionHeight = 60;
+        public static int regionHeight = 80;
         /*
          * Some color constants
          */
@@ -66,9 +66,9 @@ public class CatHW_Vision extends CatHW_Subsystem
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(160,10);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(130,98);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(245,75);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(140,75);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,75);
 
         static int REGION_WIDTH = regionWidth;
         static int REGION_HEIGHT = regionHeight;
@@ -378,32 +378,8 @@ public class CatHW_Vision extends CatHW_Subsystem
                 .translation(-(20 * mmPerInch), (fullField - (12 * mmPerInch)), mmTargetHeight)
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
 
-        //
-        // Create a transformation matrix describing where the phone is on the robot.
-        //
-        // NOTE !!!!  It's very important that you turn OFF your phone's Auto-Screen-Rotation option.
-        // Lock it into Portrait for these numbers to work.
-        //
-        // Info:  The coordinate frame for the robot looks the same as the field.
-        // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
-        // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-        //
-        // The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-        // pointing to the LEFT side of the Robot.
-        // The two examples below assume that the camera is facing forward out the front of the robot.
 
-        // We need to rotate the camera around it's long axis to bring the correct camera forward.
-/*        if (CAMERA_CHOICE == BACK) {
-            phoneYRotate = -90;
-        } else {
-            phoneYRotate = 90;
-        }
 
-        // Rotate the phone vertical about the X axis if it's in portrait mode
-        if (PHONE_IS_PORTRAIT) {
-            phoneXRotate = 90 ;
-        }
-*/
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
         final float CAMERA_FORWARD_DISPLACEMENT  = 5.5f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center

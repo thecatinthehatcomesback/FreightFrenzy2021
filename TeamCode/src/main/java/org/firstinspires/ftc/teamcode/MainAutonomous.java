@@ -1,4 +1,3 @@
-package org.firstinspires.ftc.teamcode;/*
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
@@ -6,15 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-*/
 
-import android.widget.Switch;
+
+
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -49,8 +45,10 @@ public class MainAutonomous extends LinearOpMode
     CatHW_Async robot  = new CatHW_Async();    // All the hardware classes init here.
     private ElapsedTime delayTimer = new ElapsedTime();
     private double timeDelay;
-    private boolean isRedAlliance = true;
-    private boolean isPowerShot = false;
+    private boolean isRedAllianceRight = true;
+    private boolean isRedAllianceLeft = true;
+    private boolean isBlueAllianceRight = true;
+    private boolean isBlueAllianceLeft = true;
 
 
 
@@ -64,7 +62,7 @@ public class MainAutonomous extends LinearOpMode
         FtcDashboard dashboard = FtcDashboard.getInstance();
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-        robot.init(hardwareMap, this, true);
+        robot.init(hardwareMap, this, false);
         robot.drive.IMU_Reset();
         robot.drive.IMU_Init();
 
@@ -96,11 +94,31 @@ public class MainAutonomous extends LinearOpMode
             }
             if (((gamepad1.x) && delayTimer.seconds() > 0.8)) {
                 // Changes Alliance Sides
-                if (isRedAlliance) {
-                    isRedAlliance = false;
+                if (isRedAllianceRight) {
+                    isRedAllianceRight = false;
+                    isRedAllianceLeft = true;
+                    robot.isRedAllianceRight = false;
+                    robot.isRedAllianceLeft = true;
+                    robot.isRedAlliance = true;
+
+                } else if(isRedAllianceLeft) {
+                    isRedAllianceLeft = false;
+                    isBlueAllianceLeft = true;
+                    robot.isRedAllianceLeft = false;
+                    robot.isBlueAllianceLeft = true;
                     robot.isRedAlliance = false;
-                } else {
-                    isRedAlliance = true;
+
+                } else if(isBlueAllianceLeft){
+                    isBlueAllianceLeft = false;
+                    isBlueAllianceRight = true;
+                    robot.isRedAllianceLeft = false;
+                    robot.isBlueAllianceRight = true;
+                    robot.isRedAlliance = false;
+                }else if(isBlueAllianceRight){
+                    isBlueAllianceRight = false;
+                    isRedAllianceRight = true;
+                    robot.isBlueAllianceRight = false;
+                    robot.isRedAllianceRight = true;
                     robot.isRedAlliance = true;
                 }
                 delayTimer.reset();
@@ -114,15 +132,7 @@ public class MainAutonomous extends LinearOpMode
              * LED code:
              */
 
-            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.MIDDLE) {
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
-            }
-            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.LEFT) {
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
-            }
-            if (robot.eyes.getDuckPos() == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT) {
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_PARTY_PALETTE);
-            }
+
 
 
             /*
@@ -131,21 +141,20 @@ public class MainAutonomous extends LinearOpMode
 
             telemetry.addData("Delay Timer: ", timeDelay);
 
-            if (isRedAlliance) {
-                telemetry.addData("Alliance: ", "Red");
-            } else {
-                telemetry.addData("Alliance: ", "Blue");
+            if (isRedAllianceRight) {
+                telemetry.addData("Alliance: ", "Red Right");
+            } else if(isRedAllianceLeft) {
+                telemetry.addData("Alliance: ", "Red Left");
+            } else if(isBlueAllianceRight){
+                telemetry.addData("Alliance: ", "Blue Right");
+            } else if(isBlueAllianceLeft){
+                telemetry.addData("Alliance: ", "Blue Left");
             }
-            if (isPowerShot) {
-                telemetry.addData("Goal: ", "Power Shot");
-            } else {
-                telemetry.addData("Goal: ", "High Goal");
-            }
-            telemetry.addData("Num of Rings", "%s", robot.eyes.getDuckPos().toString());
-            telemetry.addData("X/Y/Theta Position", "%.2f %.2f %.2f");
+
+            telemetry.addData("Duck Pos: ", "%s", robot.eyes.getDuckPos().toString());
 
 
-            dashboardTelemetry.addData("Num of Rings", "%s", robot.eyes.getDuckPos().toString());
+            dashboardTelemetry.addData("Duck Pos:", "%s", robot.eyes.getDuckPos().toString());
             telemetry.addData("Analysis Right", robot.eyes.pipeline.avg1GetAnalysis());
             telemetry.addData("Analysis Middle", robot.eyes.pipeline.avg2GetAnalysis());
             telemetry.addData("Analysis Left", robot.eyes.pipeline.avg3GetAnalysis());
@@ -168,23 +177,31 @@ public class MainAutonomous extends LinearOpMode
          * DO STUFF FOR the OPMODE!!!
          */
 
+        if(isBlueAllianceLeft){
+            blueLeft();
+        }else if(isBlueAllianceRight){
+            blueRight();
+        }else if(isRedAllianceLeft){
+            redLeft();
+        }else if(isRedAllianceRight){
+            redRight();
+        }
+
 
 
 }
+
     public void blueLeft(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
         switch (duckPos){
-            case NONE:
-                break;
             case LEFT:
-                driveLeft();
+
+
                 break;
             case MIDDLE:
-                driveMiddle();
                 break;
             case RIGHT:
-                driveRight();
                 break;
         }
 
@@ -193,59 +210,59 @@ public class MainAutonomous extends LinearOpMode
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
         switch (duckPos){
-            case NONE:
-                break;
+
             case LEFT:
-                driveLeft();
                 break;
             case MIDDLE:
-                driveMiddle();
                 break;
             case RIGHT:
-                driveRight();
                 break;
         }
 
     }
     public void redLeft(){
-        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
-        switch (duckPos){
-            case NONE:
-                break;
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        switch (duckPos) {
+
             case LEFT:
-                driveLeft();
+                robot.drive.quickDriveHorizontal(.5,4,5);
+                robot.drive.quickDriveVertical(.3,43,5);
+                robot.drive.quickTurn(.5,-90,5);
+                robot.drive.quickDriveVertical(.5,-6,5);
+
+                // TODO:lift duck to platform
+
+                robot.drive.quickDriveVertical(.5,35,5);
+                robot.drive.quickDriveHorizontal(.5,-20,5);
+                robot.drive.quickDriveHorizontal(.2,-5,5);
+
+                // TODO: spin carousel
+
+                robot.drive.quickDriveHorizontal(.5,20,5);
                 break;
             case MIDDLE:
-                driveMiddle();
                 break;
             case RIGHT:
-                driveRight();
                 break;
-        }
 
+        }
     }
     public void redRight(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
         switch (duckPos){
-            case NONE:
-                break;
+
             case LEFT:
-                driveLeft();
                 break;
             case MIDDLE:
-                driveMiddle();
                 break;
             case RIGHT:
-                driveRight();
                 break;
         }
 
     }
-    public void driveLeft(){
 
-    }
 
     public void driveMiddle(){
 

@@ -284,5 +284,7 @@ public class EasyOpenCVExample extends LinearOpMode
         public int avg3GetAnalysis(){
             return avg3;
         }
+
+
     }
 }

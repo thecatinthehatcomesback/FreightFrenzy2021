@@ -27,8 +27,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
     // Motors: //
     public DcMotor intakeMotor = null;
     public DcMotor transferMotor = null;
-    public Servo leftArm = null;
-    public Servo rightArm = null;
+
 
 
 
@@ -59,10 +58,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         // Set motor modes: //
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftArm = hwMap.get(Servo.class,"leftArm");
-        rightArm = hwMap.get(Servo.class,"rightArm");
-        leftArm.setPosition(0);
-        rightArm.setPosition(.75);
+
 
 
     }

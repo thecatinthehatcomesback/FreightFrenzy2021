@@ -23,6 +23,10 @@ public class CatHW_Async
      * Attribute that is used to tell the robot through all the other classes whether it is on the
      * red or blue alliance.
      */
+    public static boolean isRedAllianceRight = true;
+    public static boolean isRedAllianceLeft = true;
+    public static boolean isBlueAllianceLeft = true;
+    public static boolean isBlueAllianceRight = true;
     public static boolean isRedAlliance = true;
 
 
@@ -36,7 +40,6 @@ public class CatHW_Async
     //CatHW_Claw claw = null;
     CatHW_Drive drive = null;
 
-    CatHW_Tail tail = null;
     CatHW_Vision eyes = null;
     CatHW_Lights lights = null;
     CatHW_Carousel carousel = null;
@@ -69,13 +72,13 @@ public class CatHW_Async
         // Give Telemetry for each system we begin to init:
         opMode.telemetry.addData("Initialize", "Jaws...");
         opMode.telemetry.update();
-        jaws = new CatHW_Jaws(this);
-        jaws.init();
+        //jaws = new CatHW_Jaws(this);
+        //jaws.init();
 
         opMode.telemetry.addData("Initialize", "Tail...");
         opMode.telemetry.update();
-        tail = new CatHW_Tail(this);
-        tail.init();
+        //tail = new CatHW_Tail(this);
+        //tail.init();
 
         opMode.telemetry.addData("Initialize", "Claw...");
         opMode.telemetry.update();
@@ -87,8 +90,8 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Lights...");
         opMode.telemetry.update();
-        lights = CatHW_Lights.getInstanceAndInit(this);
-        lights.init();
+        //lights = CatHW_Lights.getInstanceAndInit(this);
+        //lights.init();
 
         opMode.telemetry.addData("Initialize", "Drive...");
         opMode.telemetry.update();
@@ -105,8 +108,8 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Carousel...");
         opMode.telemetry.update();
-        carousel = new CatHW_Carousel(this);
-        carousel.init();
+        //carousel = new CatHW_Carousel(this);
+        //carousel.init();
     }
 
     //----------------------------------------------------------------------------------------------

@@ -62,9 +62,9 @@ public class MainTeleOp extends LinearOpMode
         waitForStart();
 
         if (CatHW_Async.isRedAlliance) {
-            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
+            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
         } else {
-            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
+            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
         }
 
         // Go! (Presses PLAY)
@@ -84,7 +84,6 @@ public class MainTeleOp extends LinearOpMode
         ElapsedTime buttontime = new ElapsedTime();
         buttontime.reset();
 
-        robot.tail.openGrabber();
 
 
         // Run infinitely until the end of the match (driver presses STOP)
@@ -130,16 +129,9 @@ public class MainTeleOp extends LinearOpMode
 
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
-            // Jaws Control:
-            if (gamepad1.left_bumper) {
-                robot.jaws.setJawPower(gamepad1.right_trigger - (gamepad1.left_trigger));
-            } else {
-                robot.jaws.setJawPower(gamepad1.right_trigger - (gamepad1.left_trigger * 0.3));
-            }
 
-            // Arm servos
-            robot.jaws.leftArm.setPosition(-gamepad2.right_stick_y*.6);
-            robot.jaws.rightArm.setPosition(0.75-(-gamepad2.right_stick_y*.6));
+
+
 
 
 
@@ -148,44 +140,6 @@ public class MainTeleOp extends LinearOpMode
             //--------------------------------------------------------------------------------------
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
-
-            
-
-
-
-            // Intake controls:
-            if (gamepad2.left_bumper) {
-                robot.jaws.setTransferPower(-1.0);
-            }else if (gamepad2.right_bumper) {
-                if (gamepad2.b) {
-                    robot.jaws.setTransferPower(0.6);
-                } else {
-                    robot.jaws.setTransferPower(1.0);
-                }
-            }else {
-                robot.jaws.setTransferPower(0.0);
-            }
-
-            if (gamepad1.right_trigger > 0.05 && gamepad1.right_trigger > gamepad1.left_trigger) {
-                if (gamepad2.b) {
-                    robot.jaws.setTransferPower(0.6);
-                } else {
-                    robot.jaws.setTransferPower(1.0);
-                }
-            } else if (gamepad2.right_trigger > 0.05 && gamepad2.right_trigger > gamepad2.left_trigger) {
-                if (gamepad2.b) {
-                    robot.jaws.setTransferPower(0.6);
-                } else {
-                    robot.jaws.setTransferPower(1.0);
-                }
-            }
-
-
-
-            // If driver 1 isn't using jaws, let driver 2 set Jaws Control:
-            if (gamepad1.right_trigger - (gamepad1.left_trigger) == 0) {
-                robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger * 0.3));
-            }
 
 
 
@@ -208,7 +162,6 @@ public class MainTeleOp extends LinearOpMode
             //        robot.driveClassic.rightFrontMotor.getCurrentPosition(),
             //      robot.driveClassic.leftRearMotor.getCurrentPosition(),
             //    robot.driveClassic.rightRearMotor.getCurrentPosition());
-            telemetry.addData("Tail P/E/T", "%.2f %d %d", robot.tail.tailMover.getPower(),robot.tail.tailMover.getCurrentPosition(), robot.tail.tailMover.getTargetPosition());
 
             telemetry.update();
 
