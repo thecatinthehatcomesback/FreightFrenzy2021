@@ -125,7 +125,7 @@ public class CatHW_Async
         ElapsedTime delayTimer = new ElapsedTime();
         while (opMode.opModeIsActive() && (delayTimer.seconds() < seconds)) {
             opMode.idle();
-            eyes.updateVuforia();
+            //eyes.updateVuforia();
         }
     }
 }
