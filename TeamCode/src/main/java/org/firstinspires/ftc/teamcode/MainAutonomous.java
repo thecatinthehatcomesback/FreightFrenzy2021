@@ -230,31 +230,6 @@ public class MainAutonomous extends LinearOpMode
     public void redLeft(){
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-
-    }
-    public void redRight(){
-        telemetry.addData("Red Right","Here");
-        telemetry.update();
-
-        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveVertical(.5,43,5);
-
-        robot.drive.quickTurn(.5,90,5);
-        robot.drive.quickDriveHorizontal(.5,15,5);
-        robot.drive.quickDriveVertical(1,34,5);
-
-
-    }
-
-
-    public void driveMiddle(){
-
-    }
-
-    public void driveRight(){
-
-    }
-    public void driveLeft(){
         robot.drive.quickDriveHorizontal(.5,4,5);
         robot.drive.quickDriveVertical(.3,43,5);
         robot.drive.quickTurn(.5,-90,5);
@@ -269,6 +244,41 @@ public class MainAutonomous extends LinearOpMode
         // TODO: spin carousel
 
         robot.drive.quickDriveHorizontal(.5,20,5);
+
+    }
+    public void redRight(){
+        telemetry.addData("Red Right","Here");
+        telemetry.update();
+
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        robot.drive.quickDriveVertical(.5,43,5);
+        switch(duckPos){
+            case NONE:
+                break;
+            case RIGHT:
+                break;
+            case MIDDLE:
+                break;
+            case LEFT:
+                break;
+        }
+        robot.drive.quickTurn(.5,90,5);
+        robot.drive.quickDriveHorizontal(.5,16,5);
+        robot.drive.quickDriveVertical(1,58,5);
+
+
+    }
+
+
+    public void driveMiddle(){
+
+    }
+
+    public void driveRight(){
+
+    }
+    public void driveLeft(){
+
 
     }
 

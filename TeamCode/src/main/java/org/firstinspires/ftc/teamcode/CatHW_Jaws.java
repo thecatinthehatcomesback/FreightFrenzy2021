@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 
 import android.util.Log;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -25,8 +26,9 @@ public class CatHW_Jaws extends CatHW_Subsystem
 {
 
     // Motors: //
-    public DcMotor intakeMotor = null;
+    public CRServo intakeMotor = null;
     public DcMotor transferMotor = null;
+    public CRServo intakeLift= null;
 
 
 
@@ -46,17 +48,19 @@ public class CatHW_Jaws extends CatHW_Subsystem
     public void init() {
 
         // Define and initialize motors: //
-        intakeMotor = hwMap.dcMotor.get("intake");
+        intakeMotor = hwMap.crservo.get("intake");
         intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Set motor modes: //
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeLift = hwMap.crservo.get("intake_lift");
+        intakeLift.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        transferMotor = hwMap.dcMotor.get("transfer");
-        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+        //transferMotor = hwMap.dcMotor.get("transfer");
+        //transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Set motor modes: //
-        transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 

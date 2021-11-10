@@ -129,7 +129,11 @@ public class MainTeleOp extends LinearOpMode
 
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
-
+            if(gamepad1.left_bumper){
+                robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            }else{
+                robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger*.5);
+            }
 
 
 
