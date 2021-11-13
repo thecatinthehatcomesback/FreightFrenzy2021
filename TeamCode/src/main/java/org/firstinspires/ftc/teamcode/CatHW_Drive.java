@@ -579,6 +579,13 @@ public class CatHW_Drive   extends CatHW_Subsystem
         waitUntilDone();
     }
 
+    public void horizontalDrivePower(double power){
+        leftFrontMotor.setPower(-power);
+        leftRearMotor.setPower(power);
+        rightFrontMotor.setPower(power);
+        rightRearMotor.setPower(-power);
+    }
+
 
     //----------------------------------------------------------------------------------------------
     // isDone Methods:

@@ -29,12 +29,15 @@ public class CatHW_Jaws extends CatHW_Subsystem
     public CRServo intakeMotor = null;
     public DcMotor transferMotor = null;
     public CRServo intakeLift= null;
+    public DcMotor lift = null;
+    public Servo dump = null;
+
+    public ElapsedTime liftTime = null;
 
 
 
 
     // Timers: //
-    private ElapsedTime runtime = new ElapsedTime();
 
 
     /* Constructor */
@@ -56,11 +59,19 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
 
 
-        //transferMotor = hwMap.dcMotor.get("transfer");
-        //transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        transferMotor = hwMap.dcMotor.get("transfer");
+        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        //lift = hwMap.dcMotor.get("lift");
+        //lift.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        dump = hwMap.servo.get("dump");
+
+        liftTime = new ElapsedTime();
 
         // Set motor modes: //
-        //transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
@@ -91,6 +102,43 @@ public class CatHW_Jaws extends CatHW_Subsystem
         intakeMotor.setPower(0.0);
     }
 
+    public void setIntakeLiftPower(double power){ intakeLift.setPower(power); }
+
+    //Lift Mecenism
+    public void setLiftFirst(double power){
+        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
+
+        lift.setTargetPosition(COUNTS_PER_REVOLUTION*5);
+    }
+    public void setLiftSecond(double power){
+        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
+
+        lift.setTargetPosition(COUNTS_PER_REVOLUTION*10);
+    }
+    public void setLiftThird(double power){
+        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
+
+        lift.setTargetPosition(COUNTS_PER_REVOLUTION*15);
+    }
+
+    public void setLiftPower(double power){
+        lift.setPower(power);
+    }
+
+    public void setDumpPos(double pos){
+        dump.setPosition(pos);
+    }
+
+
+    public void setIntakeLiftUp(double power){
+        intakeLift.setPower(-power);
+        liftTime.reset();
+
+    }
+    public void setIntakeLiftDown(double power){
+        intakeLift.setPower(power);
+        liftTime.reset();
+    }
 
     //----------------------------------------------------------------------------------------------
     // transfer Methods:
@@ -118,9 +166,13 @@ public class CatHW_Jaws extends CatHW_Subsystem
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean isDone() {
-        Log.d("catbot", String.format(" intake power %.2f,", transferMotor.getPower()));
+        //Log.d("catbot", String.format(" intake power %.2f,", transferMotor.getPower()));
         /* isDone stuff for CatHW_Jaws */
-        double TIMEOUT = 3.0;
-        return !(transferMotor.isBusy() && (runtime.seconds() < TIMEOUT));
+        double TIMEOUT = .5;
+        if(liftTime.seconds()>TIMEOUT){
+            intakeLift.setPower(0);
+            return true;
+        }
+        return false;
     }
 }

@@ -129,10 +129,17 @@ public class MainTeleOp extends LinearOpMode
 
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
-            if(gamepad1.left_bumper){
+            if(gamepad1.right_bumper){
                 robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger);
             }else{
                 robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger*.5);
+            }
+
+            if(gamepad1.dpad_left){
+                robot.drive.horizontalDrivePower(.3);
+
+            }else if(gamepad1.dpad_right){
+                robot.drive.horizontalDrivePower(-.3);
             }
 
 
@@ -144,7 +151,41 @@ public class MainTeleOp extends LinearOpMode
             //--------------------------------------------------------------------------------------
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
+            if (gamepad1.right_trigger - (gamepad1.left_trigger) == 0) {
+                robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger * 0.3));
+            }
 
+            if(gamepad2.left_bumper){
+                robot.jaws.setIntakeLiftDown(.8);
+            }else if(gamepad2.right_bumper){
+                robot.jaws.setIntakeLiftUp(.8);
+            }
+            robot.jaws.isDone(); //will shut off intake lift when done moving
+
+            robot.jaws.setTransferPower(-gamepad2.right_stick_y);
+
+            if(gamepad2.dpad_up){
+                robot.jaws.setLiftThird(.5);
+            }else if(gamepad2.dpad_left){
+                robot.jaws.setLiftSecond(.5);
+            }else if(gamepad2.dpad_down){
+                robot.jaws.setLiftFirst(.5);
+            } else {
+                //robot.jaws.setLiftPower(0);
+            }
+            robot.jaws.setTransferPower(-gamepad2.left_stick_y);
+
+            if(gamepad2.b){
+                robot.jaws.setDumpPos(45);
+            }else{
+                robot.jaws.setDumpPos(0);
+            }
+
+            if(gamepad2.x){
+                robot.carousel.rotateCarousel();
+            }
+
+            robot.carousel.isDone(); //will check rotation and shut it off
 
 
             //--------------------------------------------------------------------------------------
@@ -159,6 +200,7 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Right Front Power:", "%.2f", rightFront);
             telemetry.addData("Left Back Power:", "%.2f", leftBack);
             telemetry.addData("Right Back Power:", "%.2f", rightBack);
+
 
 
             //telemetry.addData("Encoder left right horiz", "%5d  %5d   %5d",

@@ -107,8 +107,8 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Carousel...");
         opMode.telemetry.update();
-        //carousel = new CatHW_Carousel(this);
-        //carousel.init();
+        carousel = new CatHW_Carousel(this);
+        carousel.init();
     }
 
     //----------------------------------------------------------------------------------------------

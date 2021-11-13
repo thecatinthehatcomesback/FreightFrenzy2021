@@ -198,6 +198,15 @@ public class MainAutonomous extends LinearOpMode
          * Runs after hit start:
          * DO STUFF FOR the OPMODE!!!
          */
+        if(isBlueAllianceLeft){
+            robot.carousel.setBlueAlliance();
+        }else if(isBlueAllianceRight){
+            robot.carousel.setBlueAlliance();
+        }else if(isRedAllianceLeft){
+            robot.carousel.setRedAlliance();
+        }else if(isRedAllianceRight){
+            robot.carousel.setRedAlliance();
+        }
 
         if(isBlueAllianceLeft){
             blueLeft();
@@ -252,6 +261,8 @@ public class MainAutonomous extends LinearOpMode
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
         robot.drive.quickDriveVertical(.5,43,5);
+         //TODO: lift duck to platform
+
         switch(duckPos){
             case NONE:
                 break;
@@ -268,18 +279,4 @@ public class MainAutonomous extends LinearOpMode
 
 
     }
-
-
-    public void driveMiddle(){
-
-    }
-
-    public void driveRight(){
-
-    }
-    public void driveLeft(){
-
-
-    }
-
 }
