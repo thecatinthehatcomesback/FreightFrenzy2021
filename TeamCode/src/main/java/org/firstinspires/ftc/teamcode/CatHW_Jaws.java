@@ -62,6 +62,9 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
         lift = hwMap.dcMotor.get("lift");
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setTargetPosition(0);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         dump = hwMap.servo.get("dump");
 
@@ -69,7 +72,6 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
         // Set motor modes: //
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
@@ -102,25 +104,29 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     public void setIntakeLiftPower(double power){ intakeLift.setPower(power); }
 
-    //Lift Mecenism
+    //Lift mechanism
     public void setLiftFirst(double power){
         lift.setTargetPosition(0);
         lift.setPower(0.4);
     }
     public void setLiftSecond(double power){
-        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
 
-        lift.setTargetPosition(COUNTS_PER_REVOLUTION*10);
+        lift.setTargetPosition(300);
         lift.setPower(0.4);
     }
     public void setLiftThird(double power){
-        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
 
-        lift.setTargetPosition(COUNTS_PER_REVOLUTION*15);
+        lift.setTargetPosition(440);
         lift.setPower(0.4);
     }
     public void bumpLift(double bumpAmount) {
-
+        if (bumpAmount > 0.5){
+            lift.setTargetPosition(1 + lift.getTargetPosition());
+            lift.setPower(0.4);
+        }else if(bumpAmount <-0.5){
+            lift.setTargetPosition(-1 + lift.getTargetPosition());
+            lift.setPower(0.4);
+        }
     }
 
     public void setLiftPower(double power){

@@ -167,9 +167,9 @@ public class MainTeleOp extends LinearOpMode
             robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
             if(gamepad2.b){
-                robot.jaws.setDumpPos(45);
+                robot.jaws.setDumpPos(-90);
             }else{
-                robot.jaws.setDumpPos(0);
+                robot.jaws.setDumpPos(-10);
             }
 
             if(gamepad2.x){
@@ -186,6 +186,8 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Right Front Power:", "%.2f", rightFront);
             telemetry.addData("Left Back Power:", "%.2f", leftBack);
             telemetry.addData("Right Back Power:", "%.2f", rightBack);
+            telemetry.addData("lift pos","Cur:%d target:%d",robot.jaws.lift.getCurrentPosition(), robot.jaws.lift.getTargetPosition());
+
 
             telemetry.update();
 
