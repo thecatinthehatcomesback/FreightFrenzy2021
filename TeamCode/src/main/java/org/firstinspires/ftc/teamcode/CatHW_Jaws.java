@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -62,8 +60,8 @@ public class CatHW_Jaws extends CatHW_Subsystem
         transferMotor = hwMap.dcMotor.get("transfer");
         transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        //lift = hwMap.dcMotor.get("lift");
-        //lift.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift = hwMap.dcMotor.get("lift");
+        lift.setDirection(DcMotorSimple.Direction.FORWARD);
 
         dump = hwMap.servo.get("dump");
 
@@ -71,7 +69,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
         // Set motor modes: //
         transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
 
@@ -106,19 +104,23 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     //Lift Mecenism
     public void setLiftFirst(double power){
-        final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
-
-        lift.setTargetPosition(COUNTS_PER_REVOLUTION*5);
+        lift.setTargetPosition(0);
+        lift.setPower(0.4);
     }
     public void setLiftSecond(double power){
         final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
 
         lift.setTargetPosition(COUNTS_PER_REVOLUTION*10);
+        lift.setPower(0.4);
     }
     public void setLiftThird(double power){
         final int COUNTS_PER_REVOLUTION =  (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
 
         lift.setTargetPosition(COUNTS_PER_REVOLUTION*15);
+        lift.setPower(0.4);
+    }
+    public void bumpLift(double bumpAmount) {
+
     }
 
     public void setLiftPower(double power){
@@ -167,6 +169,11 @@ public class CatHW_Jaws extends CatHW_Subsystem
     @Override
     public boolean isDone() {
         //Log.d("catbot", String.format(" intake power %.2f,", transferMotor.getPower()));
+        // turn off lift when it's all the way down.
+        if ( (lift.getTargetPosition() == 0) && (Math.abs(lift.getCurrentPosition()) < 50)) {
+            lift.setPower(0);
+        }
+
         /* isDone stuff for CatHW_Jaws */
         double TIMEOUT = .5;
         if(liftTime.seconds()>TIMEOUT){

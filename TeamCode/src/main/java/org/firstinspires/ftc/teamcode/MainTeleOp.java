@@ -3,11 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -124,9 +120,9 @@ public class MainTeleOp extends LinearOpMode
             rightFront = rightFront * SF * driveSpeed;
             leftBack = leftBack * SF * driveSpeed;
             rightBack = rightBack * SF * driveSpeed;
-                // DRIVE!!!
-            if (!turningMode) {
 
+            // DRIVE!!!
+            if (!turningMode) {
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
             if(gamepad1.right_bumper){
@@ -141,10 +137,6 @@ public class MainTeleOp extends LinearOpMode
             }else if(gamepad1.dpad_right){
                 robot.drive.horizontalDrivePower(-.3);
             }
-
-
-
-
 
 
 
@@ -163,7 +155,6 @@ public class MainTeleOp extends LinearOpMode
             robot.jaws.isDone(); //will shut off intake lift when done moving
 
             robot.jaws.setTransferPower(-gamepad2.right_stick_y);
-
             if(gamepad2.dpad_up){
                 robot.jaws.setLiftThird(.5);
             }else if(gamepad2.dpad_left){
@@ -173,7 +164,7 @@ public class MainTeleOp extends LinearOpMode
             } else {
                 //robot.jaws.setLiftPower(0);
             }
-            robot.jaws.setTransferPower(-gamepad2.left_stick_y);
+            robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
             if(gamepad2.b){
                 robot.jaws.setDumpPos(45);
@@ -189,11 +180,6 @@ public class MainTeleOp extends LinearOpMode
 
 
             //--------------------------------------------------------------------------------------
-            // Automated Driver Control Enhancements:
-            //--------------------------------------------------------------------------------------
-
-
-            //--------------------------------------------------------------------------------------
             // Telemetry Data:
             //--------------------------------------------------------------------------------------
             telemetry.addData("Left Front Power:", "%.2f", leftFront);
@@ -201,20 +187,12 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Left Back Power:", "%.2f", leftBack);
             telemetry.addData("Right Back Power:", "%.2f", rightBack);
 
-
-
-            //telemetry.addData("Encoder left right horiz", "%5d  %5d   %5d",
-            //      robot.driveClassic.leftFrontMotor.getCurrentPosition(),
-            //        robot.driveClassic.rightFrontMotor.getCurrentPosition(),
-            //      robot.driveClassic.leftRearMotor.getCurrentPosition(),
-            //    robot.driveClassic.rightRearMotor.getCurrentPosition());
-
             telemetry.update();
 
 
-            dashboardTelemetry.addData("PID set","%.5f  %.5f  %.5f  %.5f",RobotConstants.LAUNCH_PID.p,RobotConstants.LAUNCH_PID.i,RobotConstants.LAUNCH_PID.d,RobotConstants.LAUNCH_PID.f);
-            dashboardTelemetry.addData("High","%4d ",2800);
-            dashboardTelemetry.addData("Low","%4d ",1800);
+            //dashboardTelemetry.addData("PID set","%.5f  %.5f  %.5f  %.5f",RobotConstants.LAUNCH_PID.p,RobotConstants.LAUNCH_PID.i,RobotConstants.LAUNCH_PID.d,RobotConstants.LAUNCH_PID.f);
+            //dashboardTelemetry.addData("High","%4d ",2800);
+            //dashboardTelemetry.addData("Low","%4d ",1800);
             dashboardTelemetry.update();
         }
 
