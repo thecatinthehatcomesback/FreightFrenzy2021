@@ -34,7 +34,6 @@ public class CatHW_Carousel extends CatHW_Subsystem{
     private static final int countsPerCarouselRevolution = (int) Math.round(COUNTS_PER_INCH*(carouselDiameter*Math.PI));
     private static final int turnCarousel = (int) Math.round(countsPerCarouselRevolution+(COUNTS_PER_INCH*5)); //extra 5 inches to make sure duck rolls off
 
-    private static boolean isRedAlliance = false;
     public CRServo Carousel = null;
     public DcMotor carouselEncoder = null;
 
@@ -46,19 +45,14 @@ public class CatHW_Carousel extends CatHW_Subsystem{
 
     }
 
-    public void setRedAlliance(){
-        isRedAlliance = true;
-    }
-    public void setBlueAlliance(){
-        isRedAlliance = false;
-    }
+
     public void rotateCarousel(){
         if(Carousel.getPower()>0.5){
             return;
         }
 
         carouselEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if(isRedAlliance){
+        if(CatHW_Async.isRedAlliance){
             Carousel.setPower(-.3);
 
         } else {
@@ -75,18 +69,18 @@ public class CatHW_Carousel extends CatHW_Subsystem{
     public boolean isDone() {
         int encoder = 0;
 
-        if(isRedAlliance){
+        if(CatHW_Async.isRedAlliance){
             encoder = -carouselEncoder.getCurrentPosition();
         } else{
             encoder = carouselEncoder.getCurrentPosition();
         }
         Log.d("catbot", String.format(" carousel encoder %d target %d, is Red alliance %d Power %.2f",
-                encoder, turnCarousel, isRedAlliance?1:0, Carousel.getPower()));
+                encoder, turnCarousel, CatHW_Async.isRedAlliance?1:0, Carousel.getPower()));
         if(Carousel.getPower() == 0){
             return true;
         }
         if(encoder < (turnCarousel * 0.2)){
-            if(isRedAlliance){
+            if(CatHW_Async.isRedAlliance){
                 Carousel.setPower(-(.3 + (encoder/(turnCarousel*.2))*.60));
             }else{
                 Carousel.setPower((.3 + (encoder/(turnCarousel*.2))*.60));

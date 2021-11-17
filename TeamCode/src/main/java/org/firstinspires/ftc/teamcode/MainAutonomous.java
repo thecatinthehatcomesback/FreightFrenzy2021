@@ -74,7 +74,7 @@ public class MainAutonomous extends LinearOpMode
         // After init is pushed but before Start we can change the delay using dpad up/down //
         delayTimer.reset();
         // Runs a loop to change certain settings while we wait to start
-        while (!opModeIsActive()) {
+        while (!opModeIsActive() && !isStopRequested()) {
             if (this.isStopRequested()) {
                 // Leave the loop if STOP is pressed
                 return;
@@ -198,15 +198,7 @@ public class MainAutonomous extends LinearOpMode
          * Runs after hit start:
          * DO STUFF FOR the OPMODE!!!
          */
-        if(isBlueAllianceLeft){
-            robot.carousel.setBlueAlliance();
-        }else if(isBlueAllianceRight){
-            robot.carousel.setBlueAlliance();
-        }else if(isRedAllianceLeft){
-            robot.carousel.setRedAlliance();
-        }else if(isRedAllianceRight){
-            robot.carousel.setRedAlliance();
-        }
+
 
         if(isBlueAllianceLeft){
             blueLeft();
@@ -244,13 +236,31 @@ public class MainAutonomous extends LinearOpMode
         robot.drive.quickTurn(.5,-90,5);
         robot.drive.quickDriveVertical(.5,-6,5);
 
-        // TODO:lift duck to platform
+        switch(duckPos){
+            case NONE:
+                break;
+            case RIGHT:
+                robot.jaws.setLiftThird(.5);
+
+                break;
+            case MIDDLE:
+                robot.jaws.setLiftSecond(.5);
+                break;
+            case LEFT:
+                robot.jaws.setLiftFirst(.5);
+                break;
+        }
+        robot.robotWait(1);
+        robot.jaws.dumpPos();
+        robot.robotWait(.5);
+        robot.jaws.unDump();
+        robot.robotWait(.5);
 
         robot.drive.quickDriveVertical(.5,35,5);
         robot.drive.quickDriveHorizontal(.5,-20,5);
         robot.drive.quickDriveHorizontal(.2,-5,5);
 
-        // TODO: spin carousel
+        robot.carousel.rotateCarousel();
 
         robot.drive.quickDriveHorizontal(.5,20,5);
 

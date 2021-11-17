@@ -137,6 +137,12 @@ public class CatHW_Jaws extends CatHW_Subsystem
         dump.setPosition(pos);
     }
 
+    public void dumpPos(){
+        dump.setPosition(0.8);
+    }
+    public void unDump(){
+        dump.setPosition(0.3);
+    }
 
     public void setIntakeLiftUp(double power){
         intakeLift.setPower(-power);

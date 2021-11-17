@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -55,7 +56,18 @@ public class MainTeleOp extends LinearOpMode
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+         ElapsedTime delayTimer = new ElapsedTime();
+
+        while(!opModeIsActive() && !isStopRequested()){
+            if (((gamepad1.x) && delayTimer.seconds() > 0.8)) {
+                delayTimer.reset();
+
+                // Changes Alliance Sides
+                CatHW_Async.isRedAlliance = !CatHW_Async.isRedAlliance;
+            }
+            telemetry.addData("Alliance","%s",CatHW_Async.isRedAlliance?"Red":"Blue");
+            telemetry.update();
+        }
 
         if (CatHW_Async.isRedAlliance) {
             //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
@@ -161,15 +173,17 @@ public class MainTeleOp extends LinearOpMode
                 robot.jaws.setLiftSecond(.5);
             }else if(gamepad2.dpad_down){
                 robot.jaws.setLiftFirst(.5);
-            } else {
-                //robot.jaws.setLiftPower(0);
+            } else if(gamepad2.ps) {
+                robot.jaws.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.jaws.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
             }
             robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
             if(gamepad2.b){
-                robot.jaws.setDumpPos(-90);
+                robot.jaws.setDumpPos(0.8);
             }else{
-                robot.jaws.setDumpPos(-10);
+                robot.jaws.setDumpPos(0.3);
             }
 
             if(gamepad2.x){
