@@ -46,9 +46,9 @@ public class MainAutonomous extends LinearOpMode
     private ElapsedTime delayTimer = new ElapsedTime();
     private double timeDelay;
     private boolean isRedAllianceRight = true;
-    private boolean isRedAllianceLeft = true;
-    private boolean isBlueAllianceRight = true;
-    private boolean isBlueAllianceLeft = true;
+    private boolean isRedAllianceLeft = false;
+    private boolean isBlueAllianceRight = false;
+    private boolean isBlueAllianceLeft = false;
 
 
 
@@ -163,13 +163,13 @@ public class MainAutonomous extends LinearOpMode
             telemetry.addData("Delay Timer: ", timeDelay);
 
             if (isRedAllianceRight) {
-                telemetry.addData("Alliance: ", "Red Right");
+                telemetry.addData("Alliance: ", "Red Hub");
             } else if(isRedAllianceLeft) {
-                telemetry.addData("Alliance: ", "Red Left");
+                telemetry.addData("Alliance: ", "Red Carousal");
             } else if(isBlueAllianceRight){
-                telemetry.addData("Alliance: ", "Blue Right");
+                telemetry.addData("Alliance: ", "Blue Carousal");
             } else if(isBlueAllianceLeft){
-                telemetry.addData("Alliance: ", "Blue Left");
+                telemetry.addData("Alliance: ", "Blue Hub");
             }
             telemetry.addData("Stuff: ","%b %b %b %b", isRedAllianceLeft, isRedAllianceRight, isBlueAllianceLeft, isBlueAllianceRight);
 
@@ -224,6 +224,43 @@ public class MainAutonomous extends LinearOpMode
     }
     public void blueRight(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        robot.drive.quickDriveVertical(.5,40,5);
+        robot.drive.quickTurn(.5,80,5);
+        robot.drive.quickDriveVertical(.3,-3.5,5);
+
+        switch(duckPos){
+            case NONE:
+                break;
+            case RIGHT:
+                robot.jaws.setLiftThird(.5);
+
+                break;
+            case MIDDLE:
+                robot.jaws.setLiftSecond(.5);
+                break;
+            case LEFT:
+                robot.jaws.setLiftFirst(.5);
+                break;
+        }
+        robot.robotWait(1);
+        robot.jaws.dumpPos();
+        robot.robotWait(1);
+        robot.jaws.unDump();
+
+        robot.jaws.setLiftFirst(.5);
+
+        robot.drive.quickDriveVertical(.5,35,5);
+        robot.drive.quickTurn(.5,160,5);
+        robot.drive.quickDriveVertical(.5,20,5);
+        robot.drive.quickDriveVertical(.2,18,5);
+
+        robot.carousel.rotateCarousel();
+        while(!robot.carousel.isDone()){
+            robot.robotWait(0.1);
+        }
+        robot.robotWait(.5);
+
+        robot.drive.quickDriveVertical(.5,-22,5);
 
 
 
@@ -232,9 +269,9 @@ public class MainAutonomous extends LinearOpMode
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
         robot.drive.quickDriveHorizontal(.5,4,5);
-        robot.drive.quickDriveVertical(.3,43,5);
+        robot.drive.quickDriveVertical(.3,40,5);
         robot.drive.quickTurn(.5,-90,5);
-        robot.drive.quickDriveVertical(.5,-6,5);
+        robot.drive.quickDriveVertical(.5,-9.5,5);
 
         switch(duckPos){
             case NONE:
@@ -255,14 +292,20 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(.5);
         robot.jaws.unDump();
         robot.robotWait(.5);
+        robot.jaws.setLiftFirst(.5);
 
-        robot.drive.quickDriveVertical(.5,35,5);
-        robot.drive.quickDriveHorizontal(.5,-20,5);
-        robot.drive.quickDriveHorizontal(.2,-5,5);
+        robot.drive.quickDriveVertical(.5,36,5);
+        robot.drive.quickTurn(.5,-160,5);
+        robot.drive.quickDriveVertical(.5,20,5);
+        robot.drive.quickDriveVertical(.2,8.5,5);
 
         robot.carousel.rotateCarousel();
+        while(!robot.carousel.isDone()){
+            robot.robotWait(0.1);
+        }
+        robot.robotWait(.5);
 
-        robot.drive.quickDriveHorizontal(.5,20,5);
+        robot.drive.quickDriveVertical(.5,-20,5);
 
     }
     public void redRight(){
@@ -270,22 +313,36 @@ public class MainAutonomous extends LinearOpMode
         telemetry.update();
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveVertical(.5,43,5);
-         //TODO: lift duck to platform
+        robot.drive.quickDriveVertical(.5,35,5);
+        robot.drive.quickTurn(0.5,90,5);
+        robot.drive.quickDriveVertical(0.5,-4,5);
+
 
         switch(duckPos){
             case NONE:
                 break;
             case RIGHT:
+                robot.jaws.setLiftThird(.5);
+
                 break;
             case MIDDLE:
+                robot.jaws.setLiftSecond(.5);
                 break;
             case LEFT:
+                robot.jaws.setLiftFirst(.5);
                 break;
         }
+        robot.robotWait(1);
+        robot.jaws.dumpPos();
+        robot.robotWait(.5);
+        robot.jaws.unDump();
+        robot.robotWait(.5);
+        robot.jaws.setLiftFirst(.5);
+
         robot.drive.quickTurn(.5,90,5);
-        robot.drive.quickDriveHorizontal(.5,16,5);
-        robot.drive.quickDriveVertical(1,58,5);
+        robot.drive.quickDriveHorizontal(.5,15,5);
+        robot.drive.quickDriveVertical(.5,50,5);
+        robot.drive.quickDriveVertical(.3,30,5);
 
 
     }

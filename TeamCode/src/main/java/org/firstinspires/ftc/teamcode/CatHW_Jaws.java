@@ -107,17 +107,17 @@ public class CatHW_Jaws extends CatHW_Subsystem
     //Lift mechanism
     public void setLiftFirst(double power){
         lift.setTargetPosition(0);
-        lift.setPower(0.4);
+        lift.setPower(0.2);
     }
     public void setLiftSecond(double power){
 
         lift.setTargetPosition(300);
-        lift.setPower(0.4);
+        lift.setPower(0.7);
     }
     public void setLiftThird(double power){
 
-        lift.setTargetPosition(440);
-        lift.setPower(0.4);
+        lift.setTargetPosition(515);
+        lift.setPower(0.7);
     }
     public void bumpLift(double bumpAmount) {
         if (bumpAmount > 0.5){

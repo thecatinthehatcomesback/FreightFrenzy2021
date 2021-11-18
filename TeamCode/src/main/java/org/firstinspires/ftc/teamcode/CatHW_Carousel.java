@@ -27,13 +27,13 @@ public class CatHW_Carousel extends CatHW_Subsystem{
         super(mainHardware);
     }
 
-    private static final double wheelDiameter = 72 / 25.4;
+    private static final double wheelDiameter = 96 / 25.4;
     private static final double carouselDiameter = 15;
     private static final double COUNTS_PER_REVOLUTION = 8192;
     private static final double COUNTS_PER_INCH = COUNTS_PER_REVOLUTION / (wheelDiameter * Math.PI);
     private static final int countsPerCarouselRevolution = (int) Math.round(COUNTS_PER_INCH*(carouselDiameter*Math.PI));
     private static final int turnCarousel = (int) Math.round(countsPerCarouselRevolution+(COUNTS_PER_INCH*5)); //extra 5 inches to make sure duck rolls off
-
+    private static final double startSpeed = 0.15;
     public CRServo Carousel = null;
     public DcMotor carouselEncoder = null;
 
@@ -53,10 +53,10 @@ public class CatHW_Carousel extends CatHW_Subsystem{
 
         carouselEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         if(CatHW_Async.isRedAlliance){
-            Carousel.setPower(-.3);
+            Carousel.setPower(-startSpeed);
 
         } else {
-            Carousel.setPower(.3);
+            Carousel.setPower(startSpeed);
         }
 
     }
@@ -81,9 +81,9 @@ public class CatHW_Carousel extends CatHW_Subsystem{
         }
         if(encoder < (turnCarousel * 0.2)){
             if(CatHW_Async.isRedAlliance){
-                Carousel.setPower(-(.3 + (encoder/(turnCarousel*.2))*.60));
+                Carousel.setPower(-(startSpeed + (encoder/(turnCarousel*.2))*.60));
             }else{
-                Carousel.setPower((.3 + (encoder/(turnCarousel*.2))*.60));
+                Carousel.setPower((startSpeed + (encoder/(turnCarousel*.2))*.60));
             }
         }
         if(encoder > turnCarousel){

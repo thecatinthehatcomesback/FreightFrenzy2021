@@ -50,6 +50,8 @@ public class CatHW_Drive   extends CatHW_Subsystem
     static final double CHILL_SPEED = 0.4;
     static final double CREEP_SPEED = 0.25;
     static final double TURN_SPEED = 0.6;
+    private float currentAngle = 0;
+    private float lastAngle = 0;
 
     // Timer stuff:
     ElapsedTime runTime = new ElapsedTime();
@@ -704,8 +706,31 @@ public class CatHW_Drive   extends CatHW_Subsystem
      * @return the robot's current orientation.
      */
     public float getCurrentAngle() {
+
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return -angles.firstAngle;
+        float newAngle = -angles.firstAngle;
+        if((lastAngle > 90) && (newAngle < -90)){
+            currentAngle = currentAngle+(newAngle + 360)-reduceAngle(currentAngle);
+        }else if((lastAngle < -90) && (newAngle > 90)){
+            currentAngle = currentAngle+(newAngle - 360)-reduceAngle(currentAngle);
+
+        }else{
+            currentAngle = currentAngle +(newAngle)-reduceAngle(currentAngle);
+        }
+        lastAngle = newAngle;
+        return currentAngle;
+
+    }
+    //returns an angle reduced to a range of -180 to +180
+    private float reduceAngle(float angle){
+        while((angle > 180) || (angle < -180)){
+            if(angle > 180){
+                angle = angle - 360;
+            }else if(angle < -180){
+                angle = angle + 360;
+            }
+        }
+        return angle;
     }
 
 }
