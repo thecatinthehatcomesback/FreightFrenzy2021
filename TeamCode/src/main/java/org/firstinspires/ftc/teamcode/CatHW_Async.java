@@ -89,8 +89,8 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Lights...");
         opMode.telemetry.update();
-        //lights = CatHW_Lights.getInstanceAndInit(this);
-        //lights.init();
+        lights = CatHW_Lights.getInstanceAndInit(this);
+        lights.init();
 
         opMode.telemetry.addData("Initialize", "Drive...");
         opMode.telemetry.update();

@@ -152,7 +152,11 @@ public class MainAutonomous extends LinearOpMode
             /*
              * LED code:
              */
-
+            if (CatHW_Async.isRedAlliance) {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
+            } else {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+            }
 
 
 
@@ -171,7 +175,6 @@ public class MainAutonomous extends LinearOpMode
             } else if(isBlueAllianceLeft){
                 telemetry.addData("Alliance: ", "Blue Hub");
             }
-            telemetry.addData("Stuff: ","%b %b %b %b", isRedAllianceLeft, isRedAllianceRight, isBlueAllianceLeft, isBlueAllianceRight);
 
             telemetry.addData("Duck Pos: ", "%s", robot.eyes.getDuckPos().toString());
 
@@ -199,7 +202,7 @@ public class MainAutonomous extends LinearOpMode
          * DO STUFF FOR the OPMODE!!!
          */
 
-
+        robot.robotWait(timeDelay);
         if(isBlueAllianceLeft){
             blueLeft();
         }else if(isBlueAllianceRight){
@@ -218,7 +221,38 @@ public class MainAutonomous extends LinearOpMode
 
     public void blueLeft(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        robot.drive.quickDriveVertical(.5,35,5);
+        robot.drive.quickTurn(0.5,-90,5);
+        robot.drive.quickDriveVertical(0.5,-3.5,5);
 
+
+        switch(duckPos){
+            case NONE:
+                break;
+            case RIGHT:
+                robot.jaws.setLiftThird(.5);
+
+                break;
+            case MIDDLE:
+                robot.jaws.setLiftSecond(.5);
+                break;
+            case LEFT:
+                robot.jaws.setLiftFirst(.5);
+                break;
+        }
+        robot.robotWait(1);
+        robot.jaws.dumpPos();
+        robot.robotWait(.5);
+        robot.jaws.unDump();
+        robot.robotWait(.5);
+        robot.jaws.setLiftFirst(.5);
+
+        robot.drive.quickDriveHorizontal(.5,-13,5);
+        robot.drive.quickDriveVertical(.5,50,5);
+        robot.drive.quickDriveVertical(.3,30,5);
+        robot.drive.quickTurn(.3,-90,5);
+        robot.jaws.setIntakeLiftDown(0.4);
+        robot.robotWait(1);
 
 
     }
@@ -226,7 +260,7 @@ public class MainAutonomous extends LinearOpMode
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
         robot.drive.quickDriveVertical(.5,40,5);
         robot.drive.quickTurn(.5,80,5);
-        robot.drive.quickDriveVertical(.3,-3.5,5);
+        robot.drive.quickDriveVertical(.3,-2,5);
 
         switch(duckPos){
             case NONE:
@@ -251,7 +285,7 @@ public class MainAutonomous extends LinearOpMode
 
         robot.drive.quickDriveVertical(.5,35,5);
         robot.drive.quickTurn(.5,160,5);
-        robot.drive.quickDriveVertical(.5,20,5);
+        robot.drive.quickDriveVertical(.5,22,5);
         robot.drive.quickDriveVertical(.2,18,5);
 
         robot.carousel.rotateCarousel();
@@ -269,9 +303,9 @@ public class MainAutonomous extends LinearOpMode
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
         robot.drive.quickDriveHorizontal(.5,4,5);
-        robot.drive.quickDriveVertical(.3,40,5);
+        robot.drive.quickDriveVertical(.2,40,5);
         robot.drive.quickTurn(.5,-90,5);
-        robot.drive.quickDriveVertical(.5,-9.5,5);
+        robot.drive.quickDriveVertical(.5,-7.5,5);
 
         switch(duckPos){
             case NONE:
@@ -313,10 +347,10 @@ public class MainAutonomous extends LinearOpMode
         telemetry.update();
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveVertical(.5,35,5);
-        robot.drive.quickTurn(0.5,90,5);
+        robot.drive.quickDriveHorizontal(0.5,-18,5);
+        robot.drive.quickDriveVertical(.5,18,5);
+        robot.drive.quickTurn(0.5,170,5);
         robot.drive.quickDriveVertical(0.5,-4,5);
-
 
         switch(duckPos){
             case NONE:
@@ -339,9 +373,9 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(.5);
         robot.jaws.setLiftFirst(.5);
 
-        robot.drive.quickTurn(.5,90,5);
-        robot.drive.quickDriveHorizontal(.5,15,5);
-        robot.drive.quickDriveVertical(.5,50,5);
+        robot.drive.quickTurn(.5,100,5);
+        robot.drive.quickDriveHorizontal(0.5,4,5);
+        robot.drive.quickDriveVertical(.6,50,5);
         robot.drive.quickDriveVertical(.3,30,5);
 
 

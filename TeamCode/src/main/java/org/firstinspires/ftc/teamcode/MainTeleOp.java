@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -70,9 +71,9 @@ public class MainTeleOp extends LinearOpMode
         }
 
         if (CatHW_Async.isRedAlliance) {
-            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_LAVA_PALETTE);
+            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
         } else {
-            //robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_OCEAN_PALETTE);
+            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
         }
 
         // Go! (Presses PLAY)
@@ -137,7 +138,7 @@ public class MainTeleOp extends LinearOpMode
             if (!turningMode) {
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
-            if(gamepad1.right_bumper){
+            if(gamepad1.left_bumper){
                 robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger);
             }else{
                 robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger*.5);
@@ -156,8 +157,15 @@ public class MainTeleOp extends LinearOpMode
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
             if (gamepad1.right_trigger - (gamepad1.left_trigger) == 0) {
-                robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger * 0.3));
+
+                if(gamepad2.left_bumper){
+                    robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger));
+                } else{
+                    robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger * 0.3));
+                }
             }
+
+
 
             if(gamepad2.left_bumper){
                 robot.jaws.setIntakeLiftDown(.8);

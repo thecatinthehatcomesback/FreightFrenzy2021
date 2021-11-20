@@ -187,7 +187,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         }
 
         /* isDone stuff for CatHW_Jaws */
-        double TIMEOUT = .5;
+        double TIMEOUT = .65;
         if(liftTime.seconds()>TIMEOUT){
             intakeLift.setPower(0);
             return true;

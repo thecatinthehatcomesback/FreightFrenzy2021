@@ -29,8 +29,7 @@ public class CatHW_Lights implements Runnable
     private ArrayList<LightPattern> patternList = new ArrayList<>();
 
     // Blinkin objects:
-    private RevBlinkinLedDriver lightsRight = null;
-    private RevBlinkinLedDriver lightsLeft = null;
+    private RevBlinkinLedDriver lights = null;
     private RevBlinkinLedDriver.BlinkinPattern patternRight;
     private RevBlinkinLedDriver.BlinkinPattern patternLeft;
 
@@ -58,8 +57,7 @@ public class CatHW_Lights implements Runnable
      */
     public void init() {
         // Blinkin LED stuff: //
-        lightsRight         = hwMap.get(RevBlinkinLedDriver.class, "blinkyRight");
-        lightsLeft          = hwMap.get(RevBlinkinLedDriver.class, "blinkyLeft");
+        lights              = hwMap.get(RevBlinkinLedDriver.class, "blinky");
         patternRight        = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
         patternLeft         = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
 
@@ -144,12 +142,9 @@ public class CatHW_Lights implements Runnable
             LightPattern current = readQueue();
 
             // Do stuff:
-            if (current.getPattern() != patternRight){
-                lightsRight.setPattern(current.getPattern());
-                patternRight = current.getPattern();
-            }
+
             if (current.getPattern() != patternLeft){
-                lightsLeft.setPattern(current.getPattern());
+                lights.setPattern(current.getPattern());
                 patternLeft = current.getPattern();
             }
 
