@@ -16,6 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
+import com.arcrobotics.ftclib.geometry.Rotation2d;
+import com.arcrobotics.ftclib.geometry.Transform2d;
+import com.arcrobotics.ftclib.geometry.Translation2d;
+import com.spartronics4915.lib.T265Camera;
+
+
 /**
  * CatHW_DriveClassic.java
  *
@@ -35,6 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  */
 public class CatHW_Drive   extends CatHW_Subsystem
 {
+    private static T265Camera slamra = null;
 
     // Wheel measurement constants:
     private static final double COUNTS_PER_REVOLUTION = (((( 1 + ( 46 / 17))) * (1 + (46 / 17))) * 28); // Accurate for gobilda 13.7:1
@@ -45,6 +52,13 @@ public class CatHW_Drive   extends CatHW_Subsystem
 
     /* Public OpMode members. */
     // Autonomous Drive Speed constants:
+    private double targetX;
+    private double targetY;
+    private double targetTheta;
+    private double strafePower;
+    private double distanceToPos;
+    private boolean isNonStop;
+
     static final double HYPER_SPEED = 0.95;
     static final double DRIVE_SPEED = 0.7;
     static final double CHILL_SPEED = 0.4;
@@ -80,11 +94,14 @@ public class CatHW_Drive   extends CatHW_Subsystem
     public DcMotor leftRearMotor = null;
     public DcMotor rightRearMotor = null;
 
+    //CatOdoAllUpdates updatesThread;
+
     /* Enums */
     enum DRIVE_METHOD {
         vertical,
         horizontal,
-        turn
+        turn,
+        translate
     }
 
     enum TURN_MODE {
@@ -134,6 +151,7 @@ public class CatHW_Drive   extends CatHW_Subsystem
 
         // Sets enums to a default value.
         currentMethod = DRIVE_METHOD.vertical;
+
     }
 
     //----------------------------------------------------------------------------------------------
@@ -669,6 +687,8 @@ public class CatHW_Drive   extends CatHW_Subsystem
         }
         return isDone;
     }
+
+
 
     //----------------------------------------------------------------------------------------------
     // IMU Methods:

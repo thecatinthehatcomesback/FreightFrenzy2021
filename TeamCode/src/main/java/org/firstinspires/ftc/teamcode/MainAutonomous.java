@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.spartronics4915.lib.T265Camera;
 
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -45,11 +46,8 @@ public class MainAutonomous extends LinearOpMode
     CatHW_Async robot  = new CatHW_Async();    // All the hardware classes init here.
     private ElapsedTime delayTimer = new ElapsedTime();
     private double timeDelay;
-    private boolean isRedAllianceRight = true;
-    private boolean isRedAllianceLeft = false;
-    private boolean isBlueAllianceRight = false;
-    private boolean isBlueAllianceLeft = false;
 
+    private static T265Camera slamra = null;
 
 
     @Override
@@ -63,8 +61,7 @@ public class MainAutonomous extends LinearOpMode
         Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
         robot.init(hardwareMap, this, false);
-        robot.drive.IMU_Reset();
-        robot.drive.IMU_Init();
+
 
 
         /*
@@ -92,54 +89,24 @@ public class MainAutonomous extends LinearOpMode
                 }
                 delayTimer.reset();
             }
-            if (((gamepad1.x) && delayTimer.seconds() > 0.8)) {
+            if (((gamepad1.x) && delayTimer.seconds() > 0.5)) {
                 // Changes Alliance Sides
-                if (isRedAllianceRight) {
-                    isRedAllianceRight = false;
-                    isRedAllianceLeft = true;
-                    isBlueAllianceRight = false;
-                    isBlueAllianceLeft = false;
+                if (robot.isRedAlliance && !robot.isLeftAlliance) {
 
-                    robot.isRedAllianceRight = false;
-                    robot.isRedAllianceLeft = true;
-                    robot.isBlueAllianceRight = false;
-                    robot.isBlueAllianceLeft = false;
                     robot.isRedAlliance = true;
+                    robot.isLeftAlliance = true;
 
-                } else if(isRedAllianceLeft) {
-                    isRedAllianceLeft = false;
-                    isRedAllianceRight = false;
-                    isBlueAllianceRight = false;
-                    isBlueAllianceLeft = true;
+                } else if(robot.isRedAlliance && robot.isLeftAlliance) {
 
-                    robot.isRedAllianceLeft = false;
-                    robot.isBlueAllianceLeft = true;
-                    robot.isRedAllianceRight = false;
-                    robot.isBlueAllianceRight = false;
-
+                    robot.isLeftAlliance = true;
                     robot.isRedAlliance = false;
+                } else if(!robot.isRedAlliance && robot.isLeftAlliance){
 
-                } else if(isBlueAllianceLeft){
-                    isBlueAllianceLeft = false;
-                    isBlueAllianceRight = true;
-                    isRedAllianceRight = false;
-                    isRedAllianceLeft = false;
-
-                    robot.isRedAllianceLeft = false;
-                    robot.isBlueAllianceRight = true;
-                    robot.isRedAllianceRight = false;
-                    robot.isBlueAllianceLeft = false;
+                    robot.isLeftAlliance = false;
                     robot.isRedAlliance = false;
-                }else if(isBlueAllianceRight){
-                    isBlueAllianceRight = false;
-                    isRedAllianceLeft = false;
-                    isBlueAllianceLeft = false;
-                    isRedAllianceRight = true;
+                }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
 
-                    robot.isBlueAllianceRight = false;
-                    robot.isRedAllianceLeft = false;
-                    robot.isRedAllianceRight = true;
-                    robot.isBlueAllianceLeft = false;
+                    robot.isLeftAlliance = false;
                     robot.isRedAlliance = true;
                 }
                 delayTimer.reset();
@@ -166,13 +133,13 @@ public class MainAutonomous extends LinearOpMode
 
             telemetry.addData("Delay Timer: ", timeDelay);
 
-            if (isRedAllianceRight) {
+            if (robot.isRedAlliance && !robot.isLeftAlliance) {
                 telemetry.addData("Alliance: ", "Red Hub");
-            } else if(isRedAllianceLeft) {
+            } else if(robot.isRedAlliance && robot.isLeftAlliance) {
                 telemetry.addData("Alliance: ", "Red Carousal");
-            } else if(isBlueAllianceRight){
+            } else if(!robot.isRedAlliance && !robot.isLeftAlliance){
                 telemetry.addData("Alliance: ", "Blue Carousal");
-            } else if(isBlueAllianceLeft){
+            } else if(!robot.isRedAlliance && robot.isLeftAlliance){
                 telemetry.addData("Alliance: ", "Blue Hub");
             }
 
@@ -203,17 +170,22 @@ public class MainAutonomous extends LinearOpMode
          */
 
         robot.robotWait(timeDelay);
-        if(isBlueAllianceLeft){
+        /*if(!robot.isRedAlliance && robot.isLeftAlliance){
             blueLeft();
-        }else if(isBlueAllianceRight){
+        }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
             blueRight();
-        }else if(isRedAllianceLeft){
+        }else if(robot.isRedAlliance && robot.isLeftAlliance){
             redLeft();
 
-        }else if(isRedAllianceRight){
+        }else if(robot.isRedAlliance && !robot.isLeftAlliance){
             redRight();
 
-        }
+        }*/
+
+        robot.drive.quickDrive(24,0,.8,0,5);
+        robot.drive.quickDrive(24,24,.8,0,5);
+        robot.drive.quickDrive(0,24,.8,0,5);
+        robot.drive.quickDrive(0,0,.8,0,5);
 
 
 
@@ -221,9 +193,6 @@ public class MainAutonomous extends LinearOpMode
 
     public void blueLeft(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveVertical(.5,35,5);
-        robot.drive.quickTurn(0.5,-90,5);
-        robot.drive.quickDriveVertical(0.5,-3.5,5);
 
 
         switch(duckPos){
@@ -247,10 +216,6 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(.5);
         robot.jaws.setLiftFirst(.5);
 
-        robot.drive.quickDriveHorizontal(.5,-13,5);
-        robot.drive.quickDriveVertical(.5,50,5);
-        robot.drive.quickDriveVertical(.3,30,5);
-        robot.drive.quickTurn(.3,-90,5);
         robot.jaws.setIntakeLiftDown(0.4);
         robot.robotWait(1);
 
@@ -258,9 +223,7 @@ public class MainAutonomous extends LinearOpMode
     }
     public void blueRight(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveVertical(.5,40,5);
-        robot.drive.quickTurn(.5,80,5);
-        robot.drive.quickDriveVertical(.3,-2,5);
+
 
         switch(duckPos){
             case NONE:
@@ -283,10 +246,7 @@ public class MainAutonomous extends LinearOpMode
 
         robot.jaws.setLiftFirst(.5);
 
-        robot.drive.quickDriveVertical(.5,35,5);
-        robot.drive.quickTurn(.5,160,5);
-        robot.drive.quickDriveVertical(.5,22,5);
-        robot.drive.quickDriveVertical(.2,18,5);
+
 
         robot.carousel.rotateCarousel();
         while(!robot.carousel.isDone()){
@@ -294,7 +254,7 @@ public class MainAutonomous extends LinearOpMode
         }
         robot.robotWait(.5);
 
-        robot.drive.quickDriveVertical(.5,-22,5);
+
 
 
 
@@ -302,10 +262,7 @@ public class MainAutonomous extends LinearOpMode
     public void redLeft(){
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveHorizontal(.5,4,5);
-        robot.drive.quickDriveVertical(.2,40,5);
-        robot.drive.quickTurn(.5,-90,5);
-        robot.drive.quickDriveVertical(.5,-7.5,5);
+
 
         switch(duckPos){
             case NONE:
@@ -328,10 +285,7 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(.5);
         robot.jaws.setLiftFirst(.5);
 
-        robot.drive.quickDriveVertical(.5,36,5);
-        robot.drive.quickTurn(.5,-160,5);
-        robot.drive.quickDriveVertical(.5,20,5);
-        robot.drive.quickDriveVertical(.2,8.5,5);
+
 
         robot.carousel.rotateCarousel();
         while(!robot.carousel.isDone()){
@@ -339,18 +293,12 @@ public class MainAutonomous extends LinearOpMode
         }
         robot.robotWait(.5);
 
-        robot.drive.quickDriveVertical(.5,-20,5);
 
     }
     public void redRight(){
-        telemetry.addData("Red Right","Here");
-        telemetry.update();
+
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDriveHorizontal(0.5,-18,5);
-        robot.drive.quickDriveVertical(.5,18,5);
-        robot.drive.quickTurn(0.5,170,5);
-        robot.drive.quickDriveVertical(0.5,-4,5);
 
         switch(duckPos){
             case NONE:
@@ -372,11 +320,6 @@ public class MainAutonomous extends LinearOpMode
         robot.jaws.unDump();
         robot.robotWait(.5);
         robot.jaws.setLiftFirst(.5);
-
-        robot.drive.quickTurn(.5,100,5);
-        robot.drive.quickDriveHorizontal(0.5,4,5);
-        robot.drive.quickDriveVertical(.6,50,5);
-        robot.drive.quickDriveVertical(.3,30,5);
 
 
     }

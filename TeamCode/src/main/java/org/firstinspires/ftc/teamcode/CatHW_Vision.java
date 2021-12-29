@@ -265,10 +265,16 @@ public class CatHW_Vision extends CatHW_Subsystem
         if (useVuoria) {
             initVuforia();
         } else {
+            mainHW.opMode.telemetry.addData("Initializing","Vision 1");
+            mainHW.opMode.telemetry.update();
             int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
             webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+            mainHW.opMode.telemetry.addData("Initializing","Vision 2");
+            mainHW.opMode.telemetry.update();
             pipeline = new UltimateGoalPipeline();
             pipeline.ringValues = new ArrayDeque<>(30);
+            mainHW.opMode.telemetry.addData("Initializing","Vision 3");
+            mainHW.opMode.telemetry.update();
 
             webcam.setPipeline(pipeline);
             webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -282,6 +288,7 @@ public class CatHW_Vision extends CatHW_Subsystem
                 public void onError(int errorCode) {
 
                 }
+
             });
         }
     }

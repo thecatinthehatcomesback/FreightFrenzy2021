@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * MainTeleOp.java
  *
@@ -50,7 +52,6 @@ public class MainTeleOp extends LinearOpMode
 
         // Initialize the hardware
         robot.init(hardwareMap, this, false);
-        robot.drive.IMU_Init();
 
         // Finished!  Now tell the driver...
         telemetry.addData("Status", "Initialized...  BOOM!");
@@ -77,6 +78,7 @@ public class MainTeleOp extends LinearOpMode
         }
 
         // Go! (Presses PLAY)
+        elapsedGameTime.time(TimeUnit.SECONDS);
         elapsedGameTime.reset();
         double driveSpeed;
         double leftFront;
@@ -84,10 +86,10 @@ public class MainTeleOp extends LinearOpMode
         double leftBack;
         double rightBack;
         double SF;
-        boolean alreadyStone = true;
         boolean endGame = false;
         boolean under10Sec = false;
         boolean turningMode = false;
+
 
 
         ElapsedTime buttontime = new ElapsedTime();
@@ -102,6 +104,22 @@ public class MainTeleOp extends LinearOpMode
             // Driver 1 Controls:
             //--------------------------------------------------------------------------------------
 
+            if((elapsedGameTime.time() >= 80) && (elapsedGameTime.time() <= 82)){
+                gamepad1.rumble(100);
+                gamepad2.rumble(100);
+            }else if(elapsedGameTime.time() >= 90 && (elapsedGameTime.time() <= 92)){
+                gamepad1.rumble(100);
+                gamepad2.rumble(100);
+            }
+
+            if(elapsedGameTime.time() > 10 && CatHW_Async.isRedAlliance && !endGame){
+                robot.lights.blink(15, RevBlinkinLedDriver.BlinkinPattern.RED,1000 );
+                endGame = true;
+
+            }else if(elapsedGameTime.time() > 90 && !CatHW_Async.isRedAlliance && ! endGame){
+                robot.lights.blink(15, RevBlinkinLedDriver.BlinkinPattern.BLUE,1000 );
+                endGame = true;
+            }
 
             // Drive train speed control:
             if (gamepad1.left_bumper) {
@@ -144,12 +162,12 @@ public class MainTeleOp extends LinearOpMode
                 robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger*.5);
             }
 
-            if(gamepad1.dpad_left){
+           /* if(gamepad1.dpad_left){
                 robot.drive.horizontalDrivePower(.3);
 
             }else if(gamepad1.dpad_right){
                 robot.drive.horizontalDrivePower(-.3);
-            }
+            }*/
 
 
 
@@ -204,12 +222,10 @@ public class MainTeleOp extends LinearOpMode
             //--------------------------------------------------------------------------------------
             // Telemetry Data:
             //--------------------------------------------------------------------------------------
-            telemetry.addData("Left Front Power:", "%.2f", leftFront);
-            telemetry.addData("Right Front Power:", "%.2f", rightFront);
-            telemetry.addData("Left Back Power:", "%.2f", leftBack);
-            telemetry.addData("Right Back Power:", "%.2f", rightBack);
-            telemetry.addData("lift pos","Cur:%d target:%d",robot.jaws.lift.getCurrentPosition(), robot.jaws.lift.getTargetPosition());
+            telemetry.addData("Power", "LF %.2f RF %.2f LB %.2f RB %.2f", leftFront, rightFront,leftBack,rightBack);
 
+            telemetry.addData("lift pos","Cur:%d target:%d",robot.jaws.lift.getCurrentPosition(), robot.jaws.lift.getTargetPosition());
+            telemetry.addData("Game Timer","%.2f",elapsedGameTime.time());
 
             telemetry.update();
 

@@ -89,6 +89,8 @@ public class EasyOpenCVExample extends LinearOpMode
             telemetry.addData("Analysis Right", pipeline.avg1GetAnalysis());
             telemetry.addData("Analysis Middle", pipeline.avg2GetAnalysis());
             telemetry.addData("Analysis Left", pipeline.avg3GetAnalysis());
+            telemetry.addData("Analysis","Top Left: %d Top Right: %d", pipeline.getTopLeftAvg(),pipeline.getTopRightAvg());
+
 
 
             telemetry.addData("Position", pipeline.position);
@@ -96,7 +98,8 @@ public class EasyOpenCVExample extends LinearOpMode
             dashboardTelemetry.addData("Analysis Right", pipeline.avg1GetAnalysis());
             dashboardTelemetry.addData("Analysis Middle", pipeline.avg2GetAnalysis());
             dashboardTelemetry.addData("Analysis Left", pipeline.avg3GetAnalysis());
-
+            dashboardTelemetry.addData("Analysis","Top Left: %d Top Right: %d", pipeline.getTopLeftAvg(),pipeline.getTopRightAvg());
+            dashboardTelemetry.addData("robot pos", pipeline.robotPosition);
             dashboardTelemetry.addData("Position", pipeline.position);
             dashboardTelemetry.update();
 
@@ -121,6 +124,12 @@ public class EasyOpenCVExample extends LinearOpMode
             NONE,
         }
 
+        public  enum robotPos{
+            LEFT,
+            RIGHT,
+            NONE
+        }
+
         /*
          * Some color constants
          */
@@ -130,9 +139,11 @@ public class EasyOpenCVExample extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(245,98);
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(130,98);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,98);
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(245,150);
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(170,150);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(80,150);
+        static final Point LEFT_TOPLEFT_ANCHOR_POINT = new Point(0,50);
+        static final Point RIGHT_TOPLEFT_ANCHOR_POINT = new Point(250,50);
 
 
         static int REGION_WIDTH = regionWidth;
@@ -161,12 +172,34 @@ public class EasyOpenCVExample extends LinearOpMode
                 REGION3_TOPLEFT_ANCHOR_POINT.x + regionWidth,
                 REGION3_TOPLEFT_ANCHOR_POINT.y+regionHeight);
 
+        Point topLeftRegionA = new Point(
+                LEFT_TOPLEFT_ANCHOR_POINT.x,
+                LEFT_TOPLEFT_ANCHOR_POINT.y);
+        Point topLeftRegionB = new Point(
+                LEFT_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                LEFT_TOPLEFT_ANCHOR_POINT.y + regionHeight);
+
+        Point topRightRegionA = new Point(
+                RIGHT_TOPLEFT_ANCHOR_POINT.x,
+                RIGHT_TOPLEFT_ANCHOR_POINT.y);
+        Point topRightRegionB = new Point(
+                RIGHT_TOPLEFT_ANCHOR_POINT.x + regionWidth,
+                RIGHT_TOPLEFT_ANCHOR_POINT.y + regionHeight);
+
+
+
+
+
         /*
          * Working variables
          */
         Mat region1_Cb;
         Mat region2_Cb;
         Mat region3_Cb;
+
+        Mat topLeft_Cb;
+        Mat topRight_Cb;
+
         Mat YCrCb = new Mat();
         Mat Cr = new Mat();
         Mat Cr2 = new Mat();
@@ -175,18 +208,28 @@ public class EasyOpenCVExample extends LinearOpMode
         int avg1;
         int avg2;
         int avg3;
-        Mat hsv = new Mat();
-        Scalar lowHSV1 = new Scalar(0, 100, 20); // lower bound HSV for yellow
-        Scalar highHSV1 = new Scalar(10,255,255); // higher bound HSV for yellow
 
-        Scalar lowHSV2 = new Scalar(160, 100, 20); // lower bound HSV for yellow
-        Scalar highHSV2 = new Scalar(179,255,255); // higher bound HSV for yellow
+        int topLeftAvg;
+        int topRightAvg;
+
+        Mat hsv = new Mat();
+        Scalar lowHSV1 = new Scalar(0, 100, 20); // lower bound HSV for red
+        Scalar highHSV1 = new Scalar(10,255,255); // higher bound HSV for red
+
+        Scalar lowHSV2 = new Scalar(160, 100, 20); // lower bound HSV for red
+        Scalar highHSV2 = new Scalar(179,255,255); // higher bound HSV for red
+        Scalar blueLowHSV = new Scalar(100,150,0);
+        Scalar blueHighHSV = new Scalar(140,255,255);
+
 
 
 
 
         // Volatile since accessed by OpMode thread w/o synchronization
         private volatile duckPosition position = duckPosition.NONE;
+        private volatile robotPos robotPosition = robotPos.NONE;
+
+
 
         /*
          * This function takes the RGB frame, converts to YCrCb,
@@ -204,8 +247,6 @@ public class EasyOpenCVExample extends LinearOpMode
             Core.extractChannel(hsv, Cr, 0);
             Core.inRange(hsv,lowHSV1,highHSV1,Cr);
             Core.inRange(hsv,lowHSV2,highHSV2,Cr);
-
-
         }
 
 
@@ -214,10 +255,14 @@ public class EasyOpenCVExample extends LinearOpMode
         public void init(Mat firstFrame)
         {
             inputToCb(firstFrame);
-
             region1_Cb = Cr.submat(new Rect(right_region1_pointA, right_region1_pointB));
             region2_Cb = Cr.submat(new Rect(middle_region2_pointA, middle_region2_pointB));
             region3_Cb = Cr.submat(new Rect(left_region3_pointA,left_region3_pointB));
+            topLeft_Cb = Cr.submat(new Rect(topLeftRegionA,topLeftRegionB));
+            topRight_Cb = Cr.submat(new Rect(topRightRegionA,topLeftRegionB));
+
+
+
         }
 
         @Override
@@ -242,24 +287,49 @@ public class EasyOpenCVExample extends LinearOpMode
             avg2 = (int) Core.mean(region2_Cb).val[0];
             avg3 = (int) Core.mean(region3_Cb).val[0];
 
+            topLeftAvg = (int) Core.mean(topLeft_Cb).val[0];
+
+            topRightAvg = (int) Core.mean(topRight_Cb).val[0];
+
+
+
+
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     right_region1_pointA, // First point which defines the rectangle
                     right_region1_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
+
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     middle_region2_pointA, // First point which defines the rectangle
                     middle_region2_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Negative thickness means solid fill
+
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     left_region3_pointA, // First point which defines the rectangle
                     left_region3_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
                     2); // Negative thickness means solid fill
+
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    topLeftRegionA, // First point which defines the rectangle
+                    topLeftRegionB, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
+
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    topRightRegionA, // First point which defines the rectangle
+                    topRightRegionB,// Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
+                    2); // Negative thickness means solid fill
+
+
 
             position = duckPosition.NONE; // Record our analysis
             if(avg1 > avg2 && avg1 > avg3){
@@ -270,20 +340,23 @@ public class EasyOpenCVExample extends LinearOpMode
                 position = duckPosition.LEFT;
             }
 
-
-
-
+            robotPosition = robotPos.NONE;
+            if(topLeftAvg > topRightAvg){
+                robotPosition = robotPos.RIGHT;
+            }else if(topRightAvg > topLeftAvg){
+                robotPosition = robotPos.LEFT;
+            }
 
             return input;
         }
 
-        public int avg1GetAnalysis() { return avg1; }
-        public int avg2GetAnalysis(){
-            return avg2;
-        }
-        public int avg3GetAnalysis(){
-            return avg3;
-        }
+        public int avg1GetAnalysis()  {  return avg1;             }
+        public int avg2GetAnalysis()  {  return avg2;             }
+        public int avg3GetAnalysis()  {  return avg3;             }
+        public int getTopLeftAvg()    {  return topLeftAvg;       }
+        public int getTopRightAvg()   {  return topRightAvg;      }
+
+
 
 
     }

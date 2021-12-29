@@ -28,5 +28,11 @@ dependencies {
 dependencies {
     implementation 'org.openftc:easyopencv:1.5.0'
     implementation 'org.openftc:rev-extensions-2:1.2'
+    implementation 'com.spartronics4915.lib:ftc265:2.1.9'
 
+
+}
+repositories{
+
+    maven {url = "https://maven.0x778.tk" }
 }

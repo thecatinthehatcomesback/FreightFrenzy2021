@@ -20,7 +20,7 @@ public class CatHW_Lights implements Runnable
     private static CatHW_Lights singleInstance = null;
 
     // Thread run conditions: //
-    private boolean isRunning   = true;
+    private boolean isRunning   = false;
     private int     sleepTime   = 25;
     private LightPattern defaultPattern = new LightPattern(sleepTime,
             RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
@@ -64,12 +64,15 @@ public class CatHW_Lights implements Runnable
 
         defaultPattern = new LightPattern(sleepTime,
                 RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE);
-        isRunning = true;
+        if(!isRunning){
+            isRunning = true;
 
-        // Start a new Thread for lights:
-        Thread lightsThread = new Thread(this);
-        lightsThread.start();
-        patternList.clear();
+            // Start a new Thread for lights:
+            Thread lightsThread = new Thread(this);
+            lightsThread.start();
+            patternList.clear();
+        }
+
     }
 
 

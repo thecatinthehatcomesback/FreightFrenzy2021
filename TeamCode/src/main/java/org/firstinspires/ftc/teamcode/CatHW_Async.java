@@ -23,11 +23,9 @@ public class CatHW_Async
      * Attribute that is used to tell the robot through all the other classes whether it is on the
      * red or blue alliance.
      */
-    public static boolean isRedAllianceRight = true;
-    public static boolean isRedAllianceLeft = false;
-    public static boolean isBlueAllianceLeft = false;
-    public static boolean isBlueAllianceRight = false;
+
     public static boolean isRedAlliance = true;
+    public static boolean isLeftAlliance = false;
 
 
     /** Local OpMode members. */
@@ -37,7 +35,7 @@ public class CatHW_Async
 
     /** Other Hardware subSystems */
     CatHW_Jaws jaws = null;
-    CatHW_Drive drive = null;
+    CatHW_DriveOdo drive = null;
 
     CatHW_Vision eyes = null;
     CatHW_Lights lights = null;
@@ -94,10 +92,10 @@ public class CatHW_Async
 
         opMode.telemetry.addData("Initialize", "Drive...");
         opMode.telemetry.update();
-        drive = new CatHW_Drive(this);
+        drive = new CatHW_DriveOdo(this);
         drive.init();
 
-        opMode.telemetry.addData("Initialize", "Eyes...");
+        opMode.telemetry.addData("Initialize", "Vision...");
         opMode.telemetry.update();
         eyes = new CatHW_Vision(this);
         eyes.initVision(hwMap, useVuforia);
