@@ -1,17 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-
-
-
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.spartronics4915.lib.T265Camera;
-
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -46,8 +39,6 @@ public class MainAutonomous extends LinearOpMode
     CatHW_Async robot  = new CatHW_Async();    // All the hardware classes init here.
     private ElapsedTime delayTimer = new ElapsedTime();
     private double timeDelay;
-
-    private static T265Camera slamra = null;
 
 
     @Override
@@ -216,7 +207,7 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(.5);
         robot.jaws.setLiftFirst(.5);
 
-        robot.jaws.setIntakeLiftDown(0.4);
+        robot.jaws.setIntakeLiftDown();
         robot.robotWait(1);
 
 

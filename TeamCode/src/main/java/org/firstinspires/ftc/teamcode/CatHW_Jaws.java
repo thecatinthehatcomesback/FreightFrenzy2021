@@ -25,8 +25,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     // Motors: //
     public CRServo intakeMotor = null;
-    public DcMotor transferMotor = null;
-    public CRServo intakeLift= null;
+    public DcMotor intakeLift= null;
     public DcMotor lift = null;
     public Servo dump = null;
 
@@ -50,15 +49,14 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
         // Define and initialize motors: //
         intakeMotor = hwMap.crservo.get("intake");
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        intakeLift = hwMap.crservo.get("intake_lift");
+        intakeLift = hwMap.dcMotor.get("intake_lift");
         intakeLift.setDirection(DcMotorSimple.Direction.FORWARD);
+        intakeLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeLift.setTargetPosition(0);
+        intakeLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
-
-        transferMotor = hwMap.dcMotor.get("transfer");
-        transferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         lift = hwMap.dcMotor.get("lift");
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -69,13 +67,6 @@ public class CatHW_Jaws extends CatHW_Subsystem
         dump = hwMap.servo.get("dump");
 
         liftTime = new ElapsedTime();
-
-        // Set motor modes: //
-        transferMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-
-
-
     }
 
 
@@ -84,11 +75,19 @@ public class CatHW_Jaws extends CatHW_Subsystem
     //----------------------------------------------------------------------------------------------
 
     /**
-     * Set the power of both jaw motors.
+     * Set the power of intake motor.
      *
      * @param power at which the motors will spin.
      */
     public void setJawPower(double power) {
+        // Max of 80% power for VEX 393 motors
+        if (power > 0.8) {
+            power = 0.8;
+        }
+        if (power < -0.8) {
+            power = -0.8;
+        }
+
         intakeMotor.setPower(power);
     }
     public double getJawPower() {
@@ -96,13 +95,11 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
 
     /**
-     * Turn off both jaws motors.
+     * Turn off intake motor.
      */
     public void turnOffJaws() {
         intakeMotor.setPower(0.0);
     }
-
-    public void setIntakeLiftPower(double power){ intakeLift.setPower(power); }
 
     //Lift mechanism
     public void setLiftFirst(double power){
@@ -110,13 +107,11 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setPower(0.2);
     }
     public void setLiftSecond(double power){
-
         lift.setTargetPosition(300);
         lift.setPower(0.7);
     }
     public void setLiftThird(double power){
-
-        lift.setTargetPosition(515);
+        lift.setTargetPosition(610);
         lift.setPower(0.7);
     }
     public void bumpLift(double bumpAmount) {
@@ -144,36 +139,16 @@ public class CatHW_Jaws extends CatHW_Subsystem
         dump.setPosition(0.3);
     }
 
-    public void setIntakeLiftUp(double power){
-        intakeLift.setPower(-power);
-        liftTime.reset();
-
+    // Code for the intake lift
+    public void setIntakeLiftUp(){
+        intakeLift.setTargetPosition(65);
+        intakeLift.setPower(0.8);
     }
-    public void setIntakeLiftDown(double power){
-        intakeLift.setPower(power);
-        liftTime.reset();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // transfer Methods:
-    //----------------------------------------------------------------------------------------------
-
-    /**
-     * Set the power of both transfer motors.
-     *
-     * @param power at which the motors will spin.
-     */
-    public void setTransferPower(double power) {
-        transferMotor.setPower(power);
+    public void setIntakeLiftDown(){
+        intakeLift.setTargetPosition(0);
+        intakeLift.setPower(-0.8);
     }
 
-
-    /**
-     * Turn off both Transfer motors.
-     */
-    public void turnOffTransfer() {
-        transferMotor.setPower(0.0);
-    }
 
     //----------------------------------------------------------------------------------------------
     // isDone Method:
@@ -187,9 +162,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         }
 
         /* isDone stuff for CatHW_Jaws */
-        double TIMEOUT = .65;
-        if(liftTime.seconds()>TIMEOUT){
-            intakeLift.setPower(0);
+        if (!intakeLift.isBusy()) {
             return true;
         }
         return false;

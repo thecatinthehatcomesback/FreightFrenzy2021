@@ -44,7 +44,7 @@ public class CatHW_Carousel extends CatHW_Subsystem{
         Carousel = hwMap.get(CRServo.class, "carousel");
         Carousel.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        carouselEncoder = hwMap.get(DcMotor.class, "transfer");
+        carouselEncoder = hwMap.get(DcMotor.class, "carousel_encoder");
 
         stopTimer = new ElapsedTime();
 
@@ -74,11 +74,11 @@ public class CatHW_Carousel extends CatHW_Subsystem{
 
     @Override
     public boolean isDone() {
-        int encoder = 0;
+        int encoder;
 
         if(CatHW_Async.isRedAlliance){
             encoder = -carouselEncoder.getCurrentPosition();
-        } else{
+        } else {
             encoder = carouselEncoder.getCurrentPosition();
         }
         Log.d("catbot", String.format(" carousel encoder %d target %d, is Red alliance %d Power %.2f",

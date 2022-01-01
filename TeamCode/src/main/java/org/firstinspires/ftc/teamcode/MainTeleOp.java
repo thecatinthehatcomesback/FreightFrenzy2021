@@ -156,43 +156,34 @@ public class MainTeleOp extends LinearOpMode
             if (!turningMode) {
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
-            if(gamepad1.left_bumper){
-                robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger);
-            }else{
-                robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger*.5);
-            }
-
-           /* if(gamepad1.dpad_left){
-                robot.drive.horizontalDrivePower(.3);
-
-            }else if(gamepad1.dpad_right){
-                robot.drive.horizontalDrivePower(-.3);
-            }*/
-
-
 
             //--------------------------------------------------------------------------------------
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
-            if (gamepad1.right_trigger - (gamepad1.left_trigger) == 0) {
+           // if (Math.abs(gamepad1.right_trigger - (gamepad1.left_trigger)) <= 0.05) {
 
                 if(gamepad2.left_bumper){
                     robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger));
                 } else{
                     robot.jaws.setJawPower(gamepad2.right_trigger - (gamepad2.left_trigger * 0.3));
                 }
-            }
+            //} else {
+            //    if(gamepad1.left_bumper){
+            //        robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger);
+            //    }else{
+            //        robot.jaws.setJawPower(gamepad1.right_trigger-gamepad1.left_trigger * 0.5);
+            //    }
+            //}
 
 
 
             if(gamepad2.left_bumper){
-                robot.jaws.setIntakeLiftDown(.8);
+                robot.jaws.setIntakeLiftDown();
             }else if(gamepad2.right_bumper){
-                robot.jaws.setIntakeLiftUp(.8);
+                robot.jaws.setIntakeLiftUp();
             }
             robot.jaws.isDone(); //will shut off intake lift when done moving
 
-            robot.jaws.setTransferPower(-gamepad2.right_stick_y);
             if(gamepad2.dpad_up){
                 robot.jaws.setLiftThird(.5);
             }else if(gamepad2.dpad_left){
@@ -202,7 +193,6 @@ public class MainTeleOp extends LinearOpMode
             } else if(gamepad2.ps) {
                 robot.jaws.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 robot.jaws.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
             }
             robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
@@ -225,6 +215,7 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Power", "LF %.2f RF %.2f LB %.2f RB %.2f", leftFront, rightFront,leftBack,rightBack);
 
             telemetry.addData("lift pos","Cur:%d target:%d",robot.jaws.lift.getCurrentPosition(), robot.jaws.lift.getTargetPosition());
+            telemetry.addData("Intake lift", "Cur:%d Target:%d",robot.jaws.intakeLift.getCurrentPosition(),robot.jaws.intakeLift.getTargetPosition());
             telemetry.addData("Game Timer","%.2f",elapsedGameTime.time());
 
             telemetry.update();
