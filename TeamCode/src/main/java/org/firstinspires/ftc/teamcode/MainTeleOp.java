@@ -217,6 +217,8 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("lift pos","Cur:%d target:%d",robot.jaws.lift.getCurrentPosition(), robot.jaws.lift.getTargetPosition());
             telemetry.addData("Intake lift", "Cur:%d Target:%d",robot.jaws.intakeLift.getCurrentPosition(),robot.jaws.intakeLift.getTargetPosition());
             telemetry.addData("Game Timer","%.2f",elapsedGameTime.time());
+            telemetry.addData("color","r:%3d g:%3d b:%3d a:%3d",robot.jaws.intakeColor.red(),
+                    robot.jaws.intakeColor.green(),robot.jaws.intakeColor.blue(), robot.jaws.intakeColor.alpha());
 
             telemetry.update();
 

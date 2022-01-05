@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -28,6 +29,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
     public DcMotor intakeLift= null;
     public DcMotor lift = null;
     public Servo dump = null;
+    public ColorSensor intakeColor = null;
 
     public ElapsedTime liftTime = null;
 
@@ -65,6 +67,8 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         dump = hwMap.servo.get("dump");
+        intakeColor = hwMap.colorSensor.get("intake_color");
+        intakeColor.enableLed(true);
 
         liftTime = new ElapsedTime();
     }
@@ -152,6 +156,15 @@ public class CatHW_Jaws extends CatHW_Subsystem
         intakeLift.setTargetPosition(0);
         intakeLift.setPower(-0.8);
     }
+
+    //intake color sensor methods
+    public boolean haveFreight() {
+        if(intakeColor.alpha()>1000){
+            return true;
+        }
+        return false;
+    }
+
 
 
     //----------------------------------------------------------------------------------------------
