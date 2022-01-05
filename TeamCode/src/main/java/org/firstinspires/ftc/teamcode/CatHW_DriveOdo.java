@@ -89,7 +89,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
     static boolean isDone;
 
-    private CatHW_RealSense realSense = null;
+    public CatHW_RealSense realSense = null;
     private CatMotionProfile motionProfile = null;
 
     ElapsedTime runTime = new ElapsedTime();
@@ -186,7 +186,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
      * @param timeoutS is how much time needs to pass before the robot moves onto the next step.
      *                 This is used/useful for stall outs.
      */
-    public void quickDrive(double x, double y, double power, double theta, double timeoutS){
+    public void quickDrive(double x, double y, double theta, double power, double timeoutS){
 
         translateDrive(x,y,power,theta,timeoutS);
         waitUntilDone();

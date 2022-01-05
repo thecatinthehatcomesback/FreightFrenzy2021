@@ -245,8 +245,7 @@ public class EasyOpenCVExample extends LinearOpMode
         {
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
             Core.extractChannel(hsv, Cr, 0);
-            Core.inRange(hsv,lowHSV1,highHSV1,Cr);
-            Core.inRange(hsv,lowHSV2,highHSV2,Cr);
+
         }
 
 
@@ -283,6 +282,8 @@ public class EasyOpenCVExample extends LinearOpMode
 
             Mat thresh = new Mat();
 
+            Core.inRange(hsv,lowHSV1,highHSV1,Cr);
+            Core.inRange(hsv,lowHSV2,highHSV2,Cr);
             avg1 = (int) Core.mean(region1_Cb).val[0];
             avg2 = (int) Core.mean(region2_Cb).val[0];
             avg3 = (int) Core.mean(region3_Cb).val[0];

@@ -102,12 +102,16 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
 
     //Lift mechanism
-    public void setLiftFirst(double power){
+    public void setLiftBottom(double power){
         lift.setTargetPosition(0);
         lift.setPower(0.2);
     }
+    public void setLiftFirst(double power){
+        lift.setTargetPosition(100);
+        lift.setPower(0.2);
+    }
     public void setLiftSecond(double power){
-        lift.setTargetPosition(300);
+        lift.setTargetPosition(380);
         lift.setPower(0.7);
     }
     public void setLiftThird(double power){
@@ -133,7 +137,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
 
     public void dumpPos(){
-        dump.setPosition(0.8);
+        dump.setPosition(0.9);
     }
     public void unDump(){
         dump.setPosition(0.3);

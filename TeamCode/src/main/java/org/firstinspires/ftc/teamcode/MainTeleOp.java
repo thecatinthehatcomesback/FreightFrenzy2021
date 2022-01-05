@@ -185,11 +185,11 @@ public class MainTeleOp extends LinearOpMode
             robot.jaws.isDone(); //will shut off intake lift when done moving
 
             if(gamepad2.dpad_up){
-                robot.jaws.setLiftThird(.5);
+                robot.jaws.setLiftThird(.8);
             }else if(gamepad2.dpad_left){
-                robot.jaws.setLiftSecond(.5);
+                robot.jaws.setLiftSecond(.8);
             }else if(gamepad2.dpad_down){
-                robot.jaws.setLiftFirst(.5);
+                robot.jaws.setLiftFirst(.8);
             } else if(gamepad2.ps) {
                 robot.jaws.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 robot.jaws.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);

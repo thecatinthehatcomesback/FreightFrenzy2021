@@ -55,7 +55,7 @@ public class CatHW_Vision extends CatHW_Subsystem
 {
     public static class UltimateGoalPipeline extends OpenCvPipeline
     {
-        public static int regionWidth = 60;
+        public static int regionWidth = 50;
         public static int regionHeight = 80;
         /*
          * Some color constants
@@ -68,7 +68,7 @@ public class CatHW_Vision extends CatHW_Subsystem
          */
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(245,75);
         static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(140,75);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(40,75);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(60,75);
 
         static int REGION_WIDTH = regionWidth;
         static int REGION_HEIGHT = regionHeight;

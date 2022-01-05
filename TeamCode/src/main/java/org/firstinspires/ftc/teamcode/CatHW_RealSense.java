@@ -37,15 +37,15 @@ public class CatHW_RealSense extends CatHW_Subsystem {
         if (up == null) return false;
 
         // We divide by 0.0254 to convert meters to inches
-        xPos = up.pose.getTranslation().getX() / 0.0254;
-        yPos = up.pose.getTranslation().getY() / 0.0254;
+        xPos = -up.pose.getTranslation().getX() / 0.0254;
+        yPos = -up.pose.getTranslation().getY() / 0.0254;
 
         rotation = up.pose.getRotation();
         return true;
     }
 
     public double getRotation(){
-        return rotation.getDegrees();
+        return -rotation.getDegrees();
     }
 
     public double getXPos(){
