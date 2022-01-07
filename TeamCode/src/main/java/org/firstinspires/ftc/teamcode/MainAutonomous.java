@@ -341,8 +341,8 @@ public class MainAutonomous extends LinearOpMode
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
-        robot.drive.quickDrive(0,33,0,.9,5);
-        robot.drive.quickDrive(-6,44,90,.9,5);
+        robot.drive.quickDrive(0,33,0,1,5);
+        robot.drive.quickDrive(-6,44,90,1,5);
         switch(duckPos){
             case NONE:
                 break;
@@ -362,10 +362,10 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(1);
         robot.jaws.unDump();
 
-        robot.drive.quickDrive(-5,2,90,.9,5); //drive to wall
+        robot.drive.quickDrive(-5,2,90,1,5); //drive to wall
         robot.jaws.setLiftBottom(.5);
         robot.drive.setLooseTolerance();
-        robot.drive.quickDrive(30,3.5,90,.5,5); //drive into warehouse
+        robot.drive.quickDrive(30,3.5,90,1,5); //drive into warehouse
         while (runningTime.seconds() < 20) {
 
 
@@ -374,21 +374,21 @@ public class MainAutonomous extends LinearOpMode
 
             robot.jaws.setIntakeLiftUp();
             robot.drive.setNormalTolerance();
-            robot.drive.quickDrive(-5, 2, 90, .9, 5);
+            robot.drive.quickDrive(-5, 2, 90, 1, 5);
             robot.jaws.setJawPower(0);
 
-            robot.drive.quickDrive(-6, 44, 90, .9, 5);
+            robot.drive.quickDrive(-6, 44, 90, 1, 5);
 
             robot.jaws.setLiftThird(.8);
             robot.jaws.waitForLift();
             robot.jaws.dumpPos();
             robot.robotWait(1);
             robot.jaws.unDump();
-            robot.drive.quickDrive(-5, 2, 90, .9, 5);
+            robot.drive.quickDrive(-5, 2, 90, 1, 5);
             robot.jaws.setLiftBottom(.5);
             robot.jaws.setIntakeLiftDown();
             robot.drive.setLooseTolerance();
-            robot.drive.quickDrive(35, 3.5, 90, .5, 5);
+            robot.drive.quickDrive(35, 3.5, 90, 1, 5);
         }
 
         //Sets robot to 0 pos DELETE Before Tournament
