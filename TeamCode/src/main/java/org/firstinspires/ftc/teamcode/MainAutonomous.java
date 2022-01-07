@@ -40,6 +40,8 @@ public class MainAutonomous extends LinearOpMode
     private ElapsedTime delayTimer = new ElapsedTime();
     private double timeDelay;
 
+    private ElapsedTime runningTime = new ElapsedTime();
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -161,8 +163,9 @@ public class MainAutonomous extends LinearOpMode
          * Runs after hit start:
          * DO STUFF FOR the OPMODE!!!
          */
-
+        runningTime.reset();
         robot.robotWait(timeDelay);
+
         /*if(!robot.isRedAlliance && robot.isLeftAlliance){
             blueLeft();
         }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
@@ -181,12 +184,12 @@ public class MainAutonomous extends LinearOpMode
 
 
 
-
 }
 
     public void blueLeft(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-
+        robot.drive.quickDrive(0,33,0,.9,5);
+        robot.drive.quickDrive(10,38,-90,.9,5);
 
 
         switch(duckPos){
@@ -205,18 +208,55 @@ public class MainAutonomous extends LinearOpMode
         }
         robot.robotWait(1);
         robot.jaws.dumpPos();
-        robot.robotWait(.5);
+        robot.robotWait(1);
         robot.jaws.unDump();
-        robot.robotWait(.5);
-        robot.jaws.setLiftFirst(.5);
+        robot.robotWait(1);
+        robot.jaws.setLiftBottom(.5);
 
         robot.jaws.setIntakeLiftDown();
         robot.robotWait(1);
+        if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT){
+            robot.drive.quickDrive(6,38,-90,.9,2);
+
+        }
+
+
+        robot.drive.quickDrive(5,-1.5,-90,.9,5);
+        robot.drive.quickDrive(-22,-1.5,-90,.5,5);
+
+        robot.jaws.setJawPower(.5);
+        robot.drive.quickIntakeDrive(0.25,5);
+
+        robot.jaws.setIntakeLiftUp();
+
+        robot.drive.quickDrive(5,-1.5,-90,.9,5);
+        robot.jaws.setJawPower(0);
+        robot.drive.quickDrive(10,38,-90,.9,5);
+
+        robot.jaws.setLiftFirst(.5);
+
+        robot.robotWait(1);
+        robot.jaws.dumpPos();
+        robot.robotWait(1);
+        robot.jaws.unDump();
+        robot.robotWait(1);
+        robot.jaws.setLiftBottom(.5);
+
+        robot.jaws.setIntakeLiftDown();
+        robot.drive.quickDrive(5,-1.5,-90,.9,5);
+        robot.drive.quickDrive(-22,-1.5,-90,.5,5);
+        robot.robotWait(1);
+
+
+
 
 
     }
     public void blueRight(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        robot.drive.quickDrive(0,30,0,.9,5);
+        robot.drive.quickDrive(-4,44,90,.9,5);
+
 
 
         switch(duckPos){
@@ -240,13 +280,16 @@ public class MainAutonomous extends LinearOpMode
 
         robot.jaws.setLiftFirst(.5);
 
+        robot.drive.quickDrive(26,10,-90,.9,5);
+        robot.robotWait(1);
+        robot.drive.quickDrive(28,27,-90,.9,5);
 
 
-        robot.carousel.rotateCarousel();
-        while(!robot.carousel.isDone()){
-            robot.robotWait(0.1);
-        }
-        robot.robotWait(.5);
+        //robot.carousel.rotateCarousel();
+        //while(!robot.carousel.isDone()){
+         //   robot.robotWait(0.1);
+        //}
+        //robot.robotWait(.5);
 
 
 
@@ -299,7 +342,7 @@ public class MainAutonomous extends LinearOpMode
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
 
         robot.drive.quickDrive(0,33,0,.9,5);
-        robot.drive.quickDrive(-5,44,90,.9,5);
+        robot.drive.quickDrive(-6,44,90,.9,5);
         switch(duckPos){
             case NONE:
                 break;
@@ -314,14 +357,48 @@ public class MainAutonomous extends LinearOpMode
                 robot.jaws.setLiftFirst(.5);
                 break;
         }
-        robot.robotWait(1);
+        robot.jaws.waitForLift();
         robot.jaws.dumpPos();
         robot.robotWait(1);
         robot.jaws.unDump();
-        robot.robotWait(1);
-        robot.jaws.setLiftFirst(.5);
+
+        robot.drive.quickDrive(-5,2,90,.9,5); //drive to wall
+        robot.jaws.setLiftBottom(.5);
+        robot.drive.setLooseTolerance();
+        robot.drive.quickDrive(30,3.5,90,.5,5); //drive into warehouse
+        while (runningTime.seconds() < 20) {
+
+
+            robot.jaws.setJawPower(.5);
+            robot.drive.quickIntakeDrive(0.25, 5);
+
+            robot.jaws.setIntakeLiftUp();
+            robot.drive.setNormalTolerance();
+            robot.drive.quickDrive(-5, 2, 90, .9, 5);
+            robot.jaws.setJawPower(0);
+
+            robot.drive.quickDrive(-6, 44, 90, .9, 5);
+
+            robot.jaws.setLiftThird(.8);
+            robot.jaws.waitForLift();
+            robot.jaws.dumpPos();
+            robot.robotWait(1);
+            robot.jaws.unDump();
+            robot.drive.quickDrive(-5, 2, 90, .9, 5);
+            robot.jaws.setLiftBottom(.5);
+            robot.jaws.setIntakeLiftDown();
+            robot.drive.setLooseTolerance();
+            robot.drive.quickDrive(35, 3.5, 90, .5, 5);
+        }
+
+        //Sets robot to 0 pos DELETE Before Tournament
+        robot.robotWait(5);
+        robot.drive.setNormalTolerance();
+
         robot.drive.quickDrive(-5,2,90,.9,5);
-        robot.drive.quickDrive(35,2,90,.5,5);
+        robot.drive.quickDrive(-5,10,90,.9,5);
+        robot.drive.quickDrive(0,0,0,.25,5);
+
 
 
     }

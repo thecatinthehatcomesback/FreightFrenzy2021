@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
@@ -13,7 +15,7 @@ public class CatHW_RealSense extends CatHW_Subsystem {
         super(mainHardware);
     }
     private static T265Camera slamra = null;
-    private boolean isCamStart;
+    private static boolean isCamStart = false;
 
     Rotation2d rotation;
 
@@ -28,6 +30,11 @@ public class CatHW_RealSense extends CatHW_Subsystem {
         if(!isCamStart) {
             slamra.start();
             isCamStart = true;
+        }
+        if(slamra.isStarted()){
+            Log.d("catbot","T265 is Started");
+        }else{
+            Log.d("catbot","T265 is NOT Started");
         }
 
     }

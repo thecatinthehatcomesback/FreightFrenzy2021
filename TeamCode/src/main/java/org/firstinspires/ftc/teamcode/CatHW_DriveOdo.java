@@ -105,7 +105,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     /** Enumerated type for the style of drive the robot will make. */
     private enum DRIVE_METHOD {
         TRANSLATE,
-        TURN
+        TURN,
+        INTAKE
     }
     /** Variable to keep track of the DRIVE_METHOD that's the current style of robot's driving. */
     private DRIVE_METHOD currentMethod;
@@ -191,6 +192,13 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
         translateDrive(x,y,power,theta,timeoutS);
         waitUntilDone();
     }
+
+    public void quickIntakeDrive(double power, double timeoutS){
+        intakeDrive(power,timeoutS);
+
+        waitUntilDone();
+    }
+
 
     /**
      * Used to move the robot across the field.  The robot can also TURN while moving along the path
@@ -299,6 +307,31 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
         isDone = false;
     }
 
+    /**
+     * Used to move the robot across the field.  The robot can also TURN while moving along the path
+     * in order for it to face a certain by the end of its path.  This method assumes the robot has
+     * odometry modules which give an absolute position of the robot on the field.
+     *
+     * @param x is the new X coordinate the robot drives to.
+     * @param y is the new Y coordinate the robot drives to.
+     * @param power at which robot max speed can be set to using motion profiling.
+     * @param theta is the angle at which the robot will TURN to while driving.
+     * @param timeoutS is how much time needs to pass before the robot moves onto the next step.
+     *                 This is used/useful for stall outs.
+     */
+    public void intakeDrive(double power, double timeoutS) {
+
+        currentMethod = DRIVE_METHOD.INTAKE;
+        timeout = timeoutS;
+        isDone = false;
+        strafePower = power;
+
+
+
+        // Reset timer once called
+        runTime.reset();
+    }
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -355,8 +388,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                     }
                 }
                 turnPow += turnRate * - 0.003;
-                Log.d("catbot", String.format("turn target %.1f, current %.1f  %s Power %.3f D:%.3f",
-                        targetTheta, zVal, clockwiseTurn ? "CW" : "CCW", turnPow, turnRate * -0.003));
+                //Log.d("catbot", String.format("turn target %.1f, current %.1f  %s Power %.3f D:%.3f",
+                  //      targetTheta, zVal, clockwiseTurn ? "CW" : "CCW", turnPow, turnRate * -0.003));
                 leftFrontMotor.setPower(turnPow);
                 leftRearMotor.setPower(turnPow);
                 rightFrontMotor.setPower(-turnPow);
@@ -489,6 +522,16 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                         .setStroke("red").strokePolygon(bxPoints, byPoints);
                 dashboard.sendTelemetryPacket(packet);
                 break;
+            }
+            case INTAKE:{
+                leftFrontMotor.setPower(strafePower);
+                rightFrontMotor.setPower(strafePower);
+                leftRearMotor.setPower(strafePower);
+                rightRearMotor.setPower(strafePower);
+
+                if(mainHW.jaws.haveFreight()){
+                    keepDriving = false;
+                }
             }
         }
 

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -108,19 +110,19 @@ public class CatHW_Jaws extends CatHW_Subsystem
     //Lift mechanism
     public void setLiftBottom(double power){
         lift.setTargetPosition(0);
-        lift.setPower(0.2);
+        lift.setPower(power);
     }
     public void setLiftFirst(double power){
         lift.setTargetPosition(100);
-        lift.setPower(0.2);
+        lift.setPower(power);
     }
     public void setLiftSecond(double power){
         lift.setTargetPosition(380);
-        lift.setPower(0.7);
+        lift.setPower(power);
     }
     public void setLiftThird(double power){
         lift.setTargetPosition(610);
-        lift.setPower(0.7);
+        lift.setPower(power);
     }
     public void bumpLift(double bumpAmount) {
         if (bumpAmount > 0.5){
@@ -159,10 +161,23 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     //intake color sensor methods
     public boolean haveFreight() {
+        Log.d("catbot", String.format("Have Freight r/g/b/a %4d %4d %4d %4d",
+                intakeColor.red(),intakeColor.green(),intakeColor.blue(),intakeColor.alpha()));
+
         if(intakeColor.alpha()>1000){
             return true;
         }
         return false;
+    }
+
+    public void waitForLift(){
+        while (lift.isBusy()) {
+            // return if the main hardware's opMode is no longer active.
+            if (!(mainHW.opMode.opModeIsActive())) {
+                return;
+            }
+            mainHW.robotWait(0.01);
+        }
     }
 
 
