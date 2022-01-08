@@ -166,7 +166,10 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
             tolerance = 0.5;
     }
     public void setLooseTolerance(){
-            tolerance= 1;
+            tolerance= 2;
+    }
+    public void setTightTolerance(){
+        tolerance = 0.1;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -312,10 +315,9 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
      * in order for it to face a certain by the end of its path.  This method assumes the robot has
      * odometry modules which give an absolute position of the robot on the field.
      *
-     * @param x is the new X coordinate the robot drives to.
-     * @param y is the new Y coordinate the robot drives to.
+     *
      * @param power at which robot max speed can be set to using motion profiling.
-     * @param theta is the angle at which the robot will TURN to while driving.
+     *
      * @param timeoutS is how much time needs to pass before the robot moves onto the next step.
      *                 This is used/useful for stall outs.
      */

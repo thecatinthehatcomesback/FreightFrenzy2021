@@ -112,9 +112,13 @@ public class MainAutonomous extends LinearOpMode
             /*
              * LED code:
              */
-            if (CatHW_Async.isRedAlliance) {
+            if (CatHW_Async.isRedAlliance && !CatHW_Async.isLeftAlliance) {
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
-            } else {
+            } else if(CatHW_Async.isRedAlliance && CatHW_Async.isLeftAlliance) {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
+            }else if(!CatHW_Async.isRedAlliance && !CatHW_Async.isLeftAlliance) {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.STROBE_BLUE);
+            }else if(!CatHW_Async.isRedAlliance && CatHW_Async.isLeftAlliance){
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             }
 
@@ -166,7 +170,7 @@ public class MainAutonomous extends LinearOpMode
         runningTime.reset();
         robot.robotWait(timeDelay);
 
-        /*if(!robot.isRedAlliance && robot.isLeftAlliance){
+        if(!robot.isRedAlliance && robot.isLeftAlliance){
             blueLeft();
         }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
             blueRight();
@@ -177,19 +181,13 @@ public class MainAutonomous extends LinearOpMode
         }else if(robot.isRedAlliance && !robot.isLeftAlliance){
             redLeft();
 
-        }*/
-        redRight();
-
-
-
-
-
+        }
 }
 
     public void blueLeft(){
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDrive(0,33,0,.9,5);
-        robot.drive.quickDrive(10,38,-90,.9,5);
+        robot.drive.quickDrive(0,33,0,1,5);
+        robot.drive.quickDrive(10,38,-90,1,5);
 
 
         switch(duckPos){
@@ -210,42 +208,41 @@ public class MainAutonomous extends LinearOpMode
         robot.jaws.dumpPos();
         robot.robotWait(1);
         robot.jaws.unDump();
-        robot.robotWait(1);
         robot.jaws.setLiftBottom(.5);
 
         robot.jaws.setIntakeLiftDown();
-        robot.robotWait(1);
+
         if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT){
-            robot.drive.quickDrive(6,38,-90,.9,2);
+            robot.drive.quickDrive(6,38,-90,1,2);
 
         }
 
 
-        robot.drive.quickDrive(5,-1.5,-90,.9,5);
-        robot.drive.quickDrive(-22,-1.5,-90,.5,5);
+        robot.drive.quickDrive(5,-2,-90,1,5);
+        robot.drive.setLooseTolerance();
+        robot.drive.quickDrive(-22,-2,-90,1,5);
+        while (runningTime.seconds() < 20) {
+            robot.jaws.setJawPower(.5);
 
-        robot.jaws.setJawPower(.5);
-        robot.drive.quickIntakeDrive(0.25,5);
+            robot.jaws.setIntakeLiftUp();
 
-        robot.jaws.setIntakeLiftUp();
+            robot.drive.quickDrive(5, -2, -90, 1, 5);
+            robot.drive.setNormalTolerance();
+            robot.jaws.setJawPower(0);
+            robot.jaws.setLiftThird(.8);
+            robot.drive.quickDrive(10, 38, -90, 1, 5);
 
-        robot.drive.quickDrive(5,-1.5,-90,.9,5);
-        robot.jaws.setJawPower(0);
-        robot.drive.quickDrive(10,38,-90,.9,5);
+            robot.jaws.dumpPos();
+            robot.robotWait(1);
+            robot.jaws.unDump();
+            robot.jaws.setLiftBottom(.5);
 
-        robot.jaws.setLiftFirst(.5);
-
-        robot.robotWait(1);
-        robot.jaws.dumpPos();
-        robot.robotWait(1);
-        robot.jaws.unDump();
-        robot.robotWait(1);
-        robot.jaws.setLiftBottom(.5);
-
-        robot.jaws.setIntakeLiftDown();
-        robot.drive.quickDrive(5,-1.5,-90,.9,5);
-        robot.drive.quickDrive(-22,-1.5,-90,.5,5);
-        robot.robotWait(1);
+            robot.jaws.setIntakeLiftDown();
+            robot.drive.quickDrive(5, -2, -90, 1, 5);
+            robot.jaws.setLiftBottom(.5);
+            robot.drive.setLooseTolerance();
+            robot.drive.quickDrive(-22, -2, -90, 1, 5);
+        }
 
 
 
@@ -278,29 +275,38 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(1);
         robot.jaws.unDump();
 
-        robot.jaws.setLiftFirst(.5);
+        robot.jaws.setLiftBottom(.5);
+        if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT){
+            robot.drive.quickDrive(0,8,0,.9,5);
+            robot.drive.quickDrive(26,8,0,.9,5);
+        }else{
+            robot.drive.quickDrive(26,8,0,.9,5);
+        }
 
-        robot.drive.quickDrive(26,10,-90,.9,5);
-        robot.robotWait(1);
-        robot.drive.quickDrive(28,27,-90,.9,5);
+        robot.carousel.rotateCarousel();
+        while(!robot.carousel.isDone()){
+            robot.robotWait(0.1);
+        }
+        robot.robotWait(.5);
 
-
-        //robot.carousel.rotateCarousel();
-        //while(!robot.carousel.isDone()){
-         //   robot.robotWait(0.1);
-        //}
-        //robot.robotWait(.5);
-
-
-
-
-
+        robot.drive.quickDrive(26,32,90,.9,5);
     }
     public void redLeft(){
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDrive(0,33,0,.9,5);
-        robot.drive.quickDrive(11,38,-90,.9,5);
+        if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.MIDDLE){
+            robot.drive.quickDrive(8,0,0,.9,5);
+            robot.drive.quickDrive(8,33,0,.9,5);
+            robot.drive.quickDrive(6,38,-90,.9,5);
+            robot.drive.quickDrive(11,38,-90,.9,5);
+
+        }else{
+            robot.drive.quickDrive(0,33,0,.9,5);
+            robot.drive.quickDrive(11,38,-90,.9,5);
+        }
+
+
+
 
         switch(duckPos){
             case NONE:
@@ -322,16 +328,16 @@ public class MainAutonomous extends LinearOpMode
         robot.jaws.unDump();
         robot.robotWait(1);
         robot.jaws.setLiftBottom(.5);
-        robot.drive.quickDrive(-26,12,90,.9,5);
-        robot.robotWait(1);
-        robot.drive.quickDrive(-26,32,90,.9,5);
+        robot.drive.quickDrive(-26,11.5,90,.9,5);
 
-
-        /*robot.carousel.rotateCarousel();
+        robot.carousel.rotateCarousel();
         while(!robot.carousel.isDone()){
             robot.robotWait(0.1);
         }
-        robot.robotWait(.5);*/
+        robot.robotWait(.5);
+        robot.drive.quickDrive(-26,32,90,.9,5);
+
+        robot.robotWait(5);
 
 
 
@@ -390,14 +396,6 @@ public class MainAutonomous extends LinearOpMode
             robot.drive.setLooseTolerance();
             robot.drive.quickDrive(35, 3.5, 90, 1, 5);
         }
-
-        //Sets robot to 0 pos DELETE Before Tournament
-        robot.robotWait(5);
-        robot.drive.setNormalTolerance();
-
-        robot.drive.quickDrive(-5,2,90,.9,5);
-        robot.drive.quickDrive(-5,10,90,.9,5);
-        robot.drive.quickDrive(0,0,0,.25,5);
 
 
 

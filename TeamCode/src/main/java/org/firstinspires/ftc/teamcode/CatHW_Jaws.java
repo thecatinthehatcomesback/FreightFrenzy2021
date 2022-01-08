@@ -158,6 +158,12 @@ public class CatHW_Jaws extends CatHW_Subsystem
         intakeLift.setTargetPosition(0);
         intakeLift.setPower(-0.8);
     }
+    public boolean isIntakeLiftDown(){
+        if(intakeLift.getTargetPosition() > 10){
+            return false;
+        }
+        return true;
+    }
 
     //intake color sensor methods
     public boolean haveFreight() {

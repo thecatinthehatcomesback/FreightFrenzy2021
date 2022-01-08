@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.arcrobotics.ftclib.geometry.Pose2d;
 import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.arcrobotics.ftclib.geometry.Transform2d;
 import com.arcrobotics.ftclib.geometry.Translation2d;
@@ -29,7 +30,10 @@ public class CatHW_RealSense extends CatHW_Subsystem {
         }
         if(!isCamStart) {
             slamra.start();
+            slamra.setPose(new Pose2d(0,0,new Rotation2d(0)));
             isCamStart = true;
+        }else{
+            slamra.setPose(new Pose2d(0,0,new Rotation2d(0)));
         }
         if(slamra.isStarted()){
             Log.d("catbot","T265 is Started");

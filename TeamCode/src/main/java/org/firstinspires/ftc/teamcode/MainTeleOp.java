@@ -112,7 +112,7 @@ public class MainTeleOp extends LinearOpMode
                 gamepad2.rumble(100);
             }
 
-            if(elapsedGameTime.time() > 10 && CatHW_Async.isRedAlliance && !endGame){
+            if(elapsedGameTime.time() > 90 && CatHW_Async.isRedAlliance && !endGame){
                 robot.lights.blink(15, RevBlinkinLedDriver.BlinkinPattern.RED,1000 );
                 endGame = true;
 
@@ -184,15 +184,23 @@ public class MainTeleOp extends LinearOpMode
             }
             robot.jaws.isDone(); //will shut off intake lift when done moving
 
+            if(robot.jaws.haveFreight() && robot.jaws.isIntakeLiftDown()){
+                robot.jaws.setIntakeLiftUp();
+                robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN,1500 );
+
+
+            }
             if(gamepad2.dpad_up){
                 robot.jaws.setLiftThird(.8);
             }else if(gamepad2.dpad_left){
                 robot.jaws.setLiftSecond(.8);
             }else if(gamepad2.dpad_down){
-                robot.jaws.setLiftFirst(.8);
+                robot.jaws.setLiftBottom(.8);
             } else if(gamepad2.ps) {
                 robot.jaws.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 robot.jaws.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else if(gamepad2.dpad_right){
+                robot.jaws.setLiftFirst(.8);
             }
             robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
