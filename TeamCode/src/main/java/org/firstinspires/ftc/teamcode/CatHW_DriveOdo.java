@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -100,6 +101,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     public DcMotor leftRearMotor = null;
     public DcMotor rightRearMotor = null;
 
+    public AnalogInput distanceSensor = null;
+
 
 
     /** Enumerated type for the style of drive the robot will make. */
@@ -137,6 +140,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
         rightFrontMotor = hwMap.dcMotor.get("right_front_motor");
         leftRearMotor = hwMap.dcMotor.get("left_rear_motor");
         rightRearMotor = hwMap.dcMotor.get("right_rear_motor");
+        distanceSensor = hwMap.analogInput.get("distance");
+
 
         // Define motor directions: //
         leftFrontMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -332,6 +337,10 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         // Reset timer once called
         runTime.reset();
+    }
+    public double getDistance(){
+        return (distanceSensor.getVoltage() - 0.16) * 83.3 + 10;
+
     }
 
 

@@ -132,13 +132,13 @@ public class MainAutonomous extends LinearOpMode
             telemetry.addData("Delay Timer: ", timeDelay);
 
             if (robot.isRedAlliance && !robot.isLeftAlliance) {
-                telemetry.addData("Alliance: ", "Red Hub");
+                telemetry.addData("Alliance: ", "Red Warehouse");
             } else if(robot.isRedAlliance && robot.isLeftAlliance) {
                 telemetry.addData("Alliance: ", "Red Carousal");
             } else if(!robot.isRedAlliance && !robot.isLeftAlliance){
                 telemetry.addData("Alliance: ", "Blue Carousal");
             } else if(!robot.isRedAlliance && robot.isLeftAlliance){
-                telemetry.addData("Alliance: ", "Blue Hub");
+                telemetry.addData("Alliance: ", "Blue Warehouse");
             }
 
             telemetry.addData("Duck Pos: ", "%s", robot.eyes.getDuckPos().toString());
@@ -174,11 +174,11 @@ public class MainAutonomous extends LinearOpMode
             blueLeft();
         }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
             blueRight();
-        }else if(robot.isRedAlliance && robot.isLeftAlliance){
+        }else if(robot.isRedAlliance && !robot.isLeftAlliance){
             redRight();
 
 
-        }else if(robot.isRedAlliance && !robot.isLeftAlliance){
+        }else if(robot.isRedAlliance && robot.isLeftAlliance){
             redLeft();
 
         }
@@ -223,6 +223,7 @@ public class MainAutonomous extends LinearOpMode
         robot.drive.quickDrive(-22,-2,-90,1,5);
         while (runningTime.seconds() < 20) {
             robot.jaws.setJawPower(.5);
+            robot.drive.intakeDrive(.25,5);
 
             robot.jaws.setIntakeLiftUp();
 

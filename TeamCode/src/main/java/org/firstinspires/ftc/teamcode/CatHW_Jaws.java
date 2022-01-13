@@ -143,10 +143,10 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
 
     public void dumpPos(){
-        dump.setPosition(0.9);
+        dump.setPosition(1);
     }
     public void unDump(){
-        dump.setPosition(0.3);
+        dump.setPosition(0);
     }
 
     // Code for the intake lift
@@ -170,7 +170,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         Log.d("catbot", String.format("Have Freight r/g/b/a %4d %4d %4d %4d",
                 intakeColor.red(),intakeColor.green(),intakeColor.blue(),intakeColor.alpha()));
 
-        if(intakeColor.alpha()>1000){
+        if(intakeColor.alpha()>2000){
             return true;
         }
         return false;

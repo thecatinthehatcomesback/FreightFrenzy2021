@@ -130,19 +130,17 @@ public class MainTeleOp extends LinearOpMode
                 driveSpeed = 0.70;
             }
 
+            double forward = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y);
+            forward = forward - gamepad1.left_trigger * 0.3;
+            double strafe = ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x);
+            double turn = gamepad1.left_stick_x;
+
+
             // Input for setDrivePowers train and sets the dead-zones:
-            leftFront = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y) +
-                    ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x) +
-                    gamepad1.left_stick_x;
-            rightFront = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y) -
-                    ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x) -
-                    gamepad1.left_stick_x;
-            leftBack = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y) -
-                    ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x) +
-                    gamepad1.left_stick_x;
-            rightBack = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y) +
-                    ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x) -
-                    gamepad1.left_stick_x;
+            leftFront = forward + strafe + turn;
+            rightFront = forward - strafe - turn;
+            leftBack = forward - strafe + turn;
+            rightBack = forward + strafe - turn;
 
             // Calculate the scale factor:
             SF = robot.drive.findScalor(leftFront, rightFront, leftBack, rightBack);
@@ -191,9 +189,9 @@ public class MainTeleOp extends LinearOpMode
 
             }
             if(gamepad2.dpad_up){
-                robot.jaws.setLiftThird(.8);
+                robot.jaws.setLiftThird(1);
             }else if(gamepad2.dpad_left){
-                robot.jaws.setLiftSecond(.8);
+                robot.jaws.setLiftSecond(1);
             }else if(gamepad2.dpad_down){
                 robot.jaws.setLiftBottom(.8);
             } else if(gamepad2.ps) {
@@ -227,6 +225,7 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("Game Timer","%.2f",elapsedGameTime.time());
             telemetry.addData("color","r:%3d g:%3d b:%3d a:%3d",robot.jaws.intakeColor.red(),
                     robot.jaws.intakeColor.green(),robot.jaws.intakeColor.blue(), robot.jaws.intakeColor.alpha());
+            telemetry.addData("distance","volt %.3f inches %.1f",robot.drive.distanceSensor.getVoltage(), robot.drive.getDistance());
 
             telemetry.update();
 
