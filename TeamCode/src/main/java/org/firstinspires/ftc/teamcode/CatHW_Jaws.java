@@ -138,16 +138,13 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setPower(power);
     }
 
-    public void setDumpPos(double pos){
-        dump.setPosition(pos);
-    }
-
+    //public void setDumpPos(double pos){
+    //    dump.setPosition(pos);
+    //}
     public void dumpPos(){
-        dump.setPosition(1);
+        dump.setPosition(0.8);
     }
-    public void unDump(){
-        dump.setPosition(0);
-    }
+    public void unDump()  { dump.setPosition(0.3); }
 
     // Code for the intake lift
     public void setIntakeLiftUp(){

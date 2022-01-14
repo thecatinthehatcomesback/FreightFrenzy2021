@@ -69,13 +69,15 @@ public class MainTeleOp extends LinearOpMode
             }
             telemetry.addData("Alliance","%s",CatHW_Async.isRedAlliance?"Red":"Blue");
             telemetry.update();
+
+            if (CatHW_Async.isRedAlliance) {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
+            } else {
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
+            }
         }
 
-        if (CatHW_Async.isRedAlliance) {
-            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
-        } else {
-            robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
-        }
+
 
         // Go! (Presses PLAY)
         elapsedGameTime.time(TimeUnit.SECONDS);
@@ -203,9 +205,9 @@ public class MainTeleOp extends LinearOpMode
             robot.jaws.bumpLift(-gamepad2.left_stick_y);
 
             if(gamepad2.b){
-                robot.jaws.setDumpPos(0.8);
+                robot.jaws.dumpPos();
             }else{
-                robot.jaws.setDumpPos(0.3);
+                robot.jaws.unDump();
             }
 
             if(gamepad2.x){
