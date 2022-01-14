@@ -208,7 +208,6 @@ public class MainAutonomous extends LinearOpMode
         robot.jaws.dumpPos();
         robot.robotWait(1);
         robot.jaws.unDump();
-        robot.jaws.setLiftBottom(.5);
 
         robot.jaws.setIntakeLiftDown();
 
@@ -219,11 +218,12 @@ public class MainAutonomous extends LinearOpMode
 
 
         robot.drive.quickDrive(5,-2,-90,1,5);
+        robot.jaws.setLiftBottom(.5);
         robot.drive.setLooseTolerance();
         robot.drive.quickDrive(-22,-2,-90,1,5);
         while (runningTime.seconds() < 20) {
             robot.jaws.setJawPower(.5);
-            robot.drive.intakeDrive(.25,5);
+            robot.drive.quickIntakeDrive(.25,5);
 
             robot.jaws.setIntakeLiftUp();
 
