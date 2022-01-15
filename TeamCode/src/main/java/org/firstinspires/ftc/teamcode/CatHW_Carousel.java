@@ -34,7 +34,7 @@ public class CatHW_Carousel extends CatHW_Subsystem{
     private static final double COUNTS_PER_INCH = COUNTS_PER_REVOLUTION / (wheelDiameter * Math.PI);
     private static final int countsPerCarouselRevolution = (int) Math.round(COUNTS_PER_INCH*(carouselDiameter*Math.PI));
     private static final int turnCarousel = (int) Math.round(countsPerCarouselRevolution+(COUNTS_PER_INCH*4)); //extra 8 inches to make sure duck rolls off
-    private static final double startSpeed = 0.15;
+    private static final double startSpeed = 0.25;
     public CRServo Carousel = null;
     public DcMotor carouselEncoder = null;
     private ElapsedTime stopTimer = null;
@@ -94,9 +94,9 @@ public class CatHW_Carousel extends CatHW_Subsystem{
         }
         if(encoder < (turnCarousel * 0.2)){
             if(CatHW_Async.isRedAlliance){
-                Carousel.setPower(-(startSpeed + (encoder/(turnCarousel*.2))*.8));
+                Carousel.setPower(-(startSpeed + (encoder/(turnCarousel*.2))*.55));
             }else{
-                Carousel.setPower((startSpeed + (encoder/(turnCarousel*.2))*.8));
+                Carousel.setPower((startSpeed + (encoder/(turnCarousel*.2))*.55));
             }
         }
         if((encoder > turnCarousel) && !isReverseMode){

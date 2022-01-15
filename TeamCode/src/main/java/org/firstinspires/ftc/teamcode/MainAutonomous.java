@@ -192,6 +192,7 @@ public class MainAutonomous extends LinearOpMode
 
         switch(duckPos){
             case NONE:
+                robot.jaws.setLiftThird(.5);
                 break;
             case RIGHT:
                 robot.jaws.setLiftThird(.5);
@@ -230,6 +231,8 @@ public class MainAutonomous extends LinearOpMode
             robot.drive.quickDrive(5, -2, -90, 1, 5);
             robot.drive.setNormalTolerance();
             robot.jaws.setJawPower(0);
+
+            robot.drive.quickDrive(10, 28, -90, 1, 5);
             robot.jaws.setLiftThird(.8);
             robot.drive.quickDrive(10, 38, -90, 1, 5);
 
@@ -259,6 +262,7 @@ public class MainAutonomous extends LinearOpMode
 
         switch(duckPos){
             case NONE:
+                robot.jaws.setLiftThird(.5);
                 break;
             case RIGHT:
                 robot.jaws.setLiftThird(.5);
@@ -311,6 +315,8 @@ public class MainAutonomous extends LinearOpMode
 
         switch(duckPos){
             case NONE:
+                robot.jaws.setLiftThird(.5);
+
                 break;
             case RIGHT:
                 robot.jaws.setLiftThird(.5);
@@ -352,6 +358,7 @@ public class MainAutonomous extends LinearOpMode
         robot.drive.quickDrive(-6,44,90,1,5);
         switch(duckPos){
             case NONE:
+                robot.jaws.setLiftThird(.5);
                 break;
             case RIGHT:
                 robot.jaws.setLiftThird(.5);
