@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.spartronics4915.lib.T265Camera;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.opencv.core.Mat;
 
 /**
  * CatHW_DriveOdo.java
@@ -77,6 +78,11 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     private  double prevzVal;
     private double prevSec;
 
+    private double prevX;
+    private double prevY;
+    private double prevTheta;
+
+    private ElapsedTime movementTimer = new ElapsedTime();
     // Turn stuff:
     int targetAngleZ;
     int baseDelta;
@@ -243,6 +249,10 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         // Reset timer once called
         runTime.reset();
+        movementTimer.reset();
+        prevX = 0;
+        prevY = 0;
+        prevTheta = 0;
     }
 
     /**
@@ -295,6 +305,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         // Reset timer once called
         runTime.reset();
+
     }
     public void turn(double theta, double timeoutS ){
         currentMethod = DRIVE_METHOD.TURN;
@@ -415,6 +426,19 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                 double getX = realSense.getXPos();
                 double getTheta = realSense.getRotation();
                 double getPower = motionProfile.getCurrentPower();
+
+                if(movementTimer.seconds() > 0.2){
+                    movementTimer.reset();
+                    double distance = Math.sqrt(Math.pow(prevX-getX,2) + Math.pow(prevY - getY,2) );
+                    if(distance<0.5){
+                        keepDriving = false;
+                        Log.d("catbot",String.format("no movement stop distance %.3f %.3f %.3f",distance,getX,getY));
+                    }
+                    prevX = getX;
+                    prevY = getY;
+                    prevTheta = getTheta;
+                }
+
 
                 // Check if ready to end without the isNonStop.
                 if (!isNonStop) {

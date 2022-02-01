@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.arcrobotics.ftclib.geometry.Pose2d;
+import com.arcrobotics.ftclib.geometry.Rotation2d;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -149,6 +151,9 @@ public class MainAutonomous extends LinearOpMode
             telemetry.addData("Analysis Right", robot.eyes.pipeline.avg1GetAnalysis());
             telemetry.addData("Analysis Middle", robot.eyes.pipeline.avg2GetAnalysis());
             telemetry.addData("Analysis Left", robot.eyes.pipeline.avg3GetAnalysis());
+
+            robot.drive.isDone();
+            telemetry.addData("Pos","%.3f %.3f %.3f",robot.drive.realSense.getXPos(),robot.drive.realSense.getYPos(), robot.drive.realSense.getRotation());
             dashboardTelemetry.update();
 
             telemetry.update();
@@ -159,6 +164,7 @@ public class MainAutonomous extends LinearOpMode
              * loop all this time so that we can make some changes.
              */
 
+
         }
 
 
@@ -167,6 +173,7 @@ public class MainAutonomous extends LinearOpMode
          * Runs after hit start:
          * DO STUFF FOR the OPMODE!!!
          */
+        robot.drive.realSense.resetPos();
         runningTime.reset();
         robot.robotWait(timeDelay);
 
@@ -192,22 +199,22 @@ public class MainAutonomous extends LinearOpMode
 
         switch(duckPos){
             case NONE:
-                robot.jaws.setLiftThird(.5);
+                robot.jaws.setLiftThird(.8);
                 break;
             case RIGHT:
-                robot.jaws.setLiftThird(.5);
+                robot.jaws.setLiftThird(.8);
 
                 break;
             case MIDDLE:
-                robot.jaws.setLiftSecond(.5);
+                robot.jaws.setLiftSecond(.8);
                 break;
             case LEFT:
-                robot.jaws.setLiftFirst(.5);
+                robot.jaws.setLiftFirst(.8);
                 break;
         }
         robot.robotWait(1);
         robot.jaws.dumpPos();
-        robot.robotWait(1);
+        robot.robotWait(2);
         robot.jaws.unDump();
 
         robot.jaws.setIntakeLiftDown();
@@ -237,7 +244,7 @@ public class MainAutonomous extends LinearOpMode
             robot.drive.quickDrive(10, 38, -90, 1, 5);
 
             robot.jaws.dumpPos();
-            robot.robotWait(1);
+            robot.robotWait(2);
             robot.jaws.unDump();
             robot.jaws.setLiftBottom(.5);
 
@@ -275,9 +282,9 @@ public class MainAutonomous extends LinearOpMode
                 robot.jaws.setLiftFirst(.5);
                 break;
         }
-        robot.robotWait(1);
+        robot.robotWait(1.5);
         robot.jaws.dumpPos();
-        robot.robotWait(1);
+        robot.robotWait(2);
         robot.jaws.unDump();
 
         robot.jaws.setLiftBottom(.5);
@@ -329,9 +336,9 @@ public class MainAutonomous extends LinearOpMode
                 robot.jaws.setLiftFirst(.5);
                 break;
         }
-        robot.robotWait(1);
+        robot.robotWait(1.5);
         robot.jaws.dumpPos();
-        robot.robotWait(1);
+        robot.robotWait(2);
         robot.jaws.unDump();
         robot.robotWait(1);
         robot.jaws.setLiftBottom(.5);
@@ -376,19 +383,20 @@ public class MainAutonomous extends LinearOpMode
         robot.robotWait(1);
         robot.jaws.unDump();
 
-        robot.drive.quickDrive(-5,2,90,1,5); //drive to wall
+        robot.drive.quickDrive(-5,3.5,90,1,3); //drive to wall
         robot.jaws.setLiftBottom(.5);
         robot.drive.setLooseTolerance();
-        robot.drive.quickDrive(30,3.5,90,1,5); //drive into warehouse
+        robot.jaws.setJawPower(.5);
+        robot.drive.quickDrive(30,4,90,1,5); //drive into warehouse
         while (runningTime.seconds() < 20) {
 
 
-            robot.jaws.setJawPower(.5);
+
             robot.drive.quickIntakeDrive(0.25, 5);
 
             robot.jaws.setIntakeLiftUp();
             robot.drive.setNormalTolerance();
-            robot.drive.quickDrive(-5, 2, 90, 1, 5);
+            robot.drive.quickDrive(-5, 2, 90, 1, 3);
             robot.jaws.setJawPower(0);
 
             robot.drive.quickDrive(-6, 44, 90, 1, 5);
@@ -396,13 +404,14 @@ public class MainAutonomous extends LinearOpMode
             robot.jaws.setLiftThird(.8);
             robot.jaws.waitForLift();
             robot.jaws.dumpPos();
-            robot.robotWait(1);
+            robot.robotWait(2);
             robot.jaws.unDump();
-            robot.drive.quickDrive(-5, 2, 90, 1, 5);
+            robot.drive.quickDrive(-5, 3, 90, 1, 3);
             robot.jaws.setLiftBottom(.5);
             robot.jaws.setIntakeLiftDown();
-            robot.drive.setLooseTolerance();
-            robot.drive.quickDrive(35, 3.5, 90, 1, 5);
+
+            robot.jaws.setJawPower(.5);
+            robot.drive.quickDrive(35, 4, 90, 1, 3);
         }
 
 

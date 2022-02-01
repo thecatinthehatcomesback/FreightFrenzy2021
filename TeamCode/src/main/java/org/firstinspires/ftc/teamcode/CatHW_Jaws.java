@@ -117,11 +117,11 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setPower(power);
     }
     public void setLiftSecond(double power){
-        lift.setTargetPosition(380);
+        lift.setTargetPosition(260);
         lift.setPower(power);
     }
     public void setLiftThird(double power){
-        lift.setTargetPosition(610);
+        lift.setTargetPosition(420);
         lift.setPower(power);
     }
     public void bumpLift(double bumpAmount) {

@@ -43,6 +43,10 @@ public class CatHW_RealSense extends CatHW_Subsystem {
 
     }
 
+    public void resetPos(){
+        slamra.setPose(new Pose2d(0,0,new Rotation2d(0)));
+    }
+
     public boolean getCameraUpdate(){
         T265Camera.CameraUpdate up = slamra.getLastReceivedCameraUpdate();
         if (up == null) return false;
