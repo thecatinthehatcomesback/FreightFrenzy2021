@@ -23,6 +23,8 @@ import com.spartronics4915.lib.T265Camera;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Mat;
 
+import java.util.ArrayList;
+
 /**
  * CatHW_DriveOdo.java
  *
@@ -82,6 +84,14 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     private double prevY;
     private double prevTheta;
 
+    /** ArrayList of Points that the robot will drive towards. */
+    private ArrayList<CatType_CurvePoint> targetPoints;
+
+    /** A default follow radius for our Pure Pursuit Algorithms. */
+    private final double DEFAULT_FOLLOW_RADIUS = 20.0;
+    /** The following distance between the robot and any point on the line paths. */
+    private double followRadius = DEFAULT_FOLLOW_RADIUS;
+
     private ElapsedTime movementTimer = new ElapsedTime();
     // Turn stuff:
     int targetAngleZ;
@@ -115,7 +125,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     private enum DRIVE_METHOD {
         TRANSLATE,
         TURN,
-        INTAKE
+        INTAKE,
+        PURE_PURSUIT
     }
     /** Variable to keep track of the DRIVE_METHOD that's the current style of robot's driving. */
     private DRIVE_METHOD currentMethod;
@@ -307,6 +318,104 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
         runTime.reset();
 
     }
+    /**
+     * Overloaded method (fancy way of saying same method header with different parameter list) that calls the other
+     * pursuitDrive() method, but automatically sets the followRadius to the DEFAULT_FOLLOW_RADIUS constant.
+     *
+     * @param points is an ArrayList of Points that make up the user-defined path the robot will follow.
+     * @param power at which the robot's max speed will be set to using motion profiling.
+     * @param timeoutS is how much time needs to pass before the robot moves onto the next step. This is
+     *         used/useful for stall outs.
+     */
+    public void pursuitDrive(ArrayList<CatType_CurvePoint> points, double power, double timeoutS) {
+
+        pursuitDrive(points, power, DEFAULT_FOLLOW_RADIUS, timeoutS);
+    }
+
+    /**
+     * Used to move the robot across the field.  The robot can also TURN while moving along the path in order for it to
+     * face a certain by the end of its path.  This method assumes the robot has odometry modules which give an absolute
+     * position of the robot on the field.
+     *
+     * @param points is an ArrayList of Points that make up the user-defined path the robot will follow.
+     * @param power at which the robot's max speed will be set to using motion profiling.
+     * @param followRadius is the distance between the robot and the point ahead of it on the path that it will
+     *         choose to follow.
+     * @param timeout is how much time needs to pass before the robot moves onto the next step. This is
+     *         used/useful for stall outs.
+     */
+    public void pursuitDrive(ArrayList<CatType_CurvePoint> points, double power, double followRadius, double timeout) {
+
+        currentMethod = DRIVE_METHOD.PURE_PURSUIT;
+        this.timeout = timeout;
+        isDone = false;
+        targetPoints = points;
+
+        targetPoints.add(0, new CatType_CurvePoint(realSense.getXPos(), realSense.getYPos(),realSense.getRotation()));
+        this.followRadius = followRadius;
+
+        //CatType_CurvePoint targetPoint = updatesThread.powerUpdate.getFollowPoint(targetPoints,
+        //        updatesThread.positionUpdate.returnRobotPointInches(), followRadius);
+
+
+        // Power update Thread:
+        if (isNonStop) {
+            // If the last drive method call was nonstop:
+            motionProfile.setNonStopTarget(points, power, followRadius);
+        } else {
+            // If the last drive method call was normal:
+            motionProfile.setTarget(points, power, followRadius);
+        }
+
+        // Set it so the next one will be nonstop.
+        isNonStop = false;
+
+        // Reset timer once called.
+        runTime.reset();
+    }
+
+    /**
+     * Nonstop TRANSLATE.
+     *
+     * @param x is the new X coordinate the robot drives to.
+     * @param y is the new Y coordinate the robot drives to.
+     * @param power at which robot max speed can be set to using motion profiling.
+     * @param theta is the angle at which the robot will TURN to while driving.
+     * @param finishedXMin the smallest X value that the drive will consider done at.
+     * @param finishedXMax the largest X value that the drive will consider done at.
+     * @param finishedYMin the smallest Y value that the drive will consider done at.
+     * @param finishedYMax the largest Y value that the drive will consider done at.
+     * @param finishedThetaMin the smallest Theta value that the drive will consider done at.
+     * @param finishedThetaMax the largest Theta value that the drive will consider done at.
+     * @param timeoutS is how much time needs to pass before the robot moves onto the next step. This is
+     *         used/useful for stall outs.
+     */
+    public void pursuitDrive(double x, double y, double power, double theta,
+                             double finishedXMin, double finishedXMax, double finishedYMin, double finishedYMax,
+                             double finishedThetaMin, double finishedThetaMax, double timeoutS) {
+
+        currentMethod = DRIVE_METHOD.PURE_PURSUIT;
+        timeout = timeoutS;
+        isDone = false;
+        //targetX = x;
+        //targetY = y;
+        //strafePower = power;
+        //targetTheta = theta;
+        xMin = finishedXMin;
+        xMax = finishedXMax;
+        yMin = finishedYMin;
+        yMax = finishedYMax;
+        thetaMin = finishedThetaMin;
+        thetaMax = finishedThetaMax;
+        maxPower = power;
+
+        isNonStop = false;
+        //if the last drive was nonstop
+        //updatesThread.powerUpdate.setNonStopTarget(x, y, power);
+
+        // Reset timer once called
+        runTime.reset();
+    }
     public void turn(double theta, double timeoutS ){
         currentMethod = DRIVE_METHOD.TURN;
         timeout = timeoutS;
@@ -365,7 +474,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
             mainHW.opMode.sleep(1);
         }
 
-        motionProfile.updatePower(realSense.getXPos(),realSense.getYPos(), realSense.getRotation());
+        double getPower = motionProfile.updatePower(realSense.getXPos(),realSense.getYPos(), realSense.getRotation());
 
         boolean keepDriving = true;
 
@@ -420,12 +529,132 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                 break;
 
             }
+            case PURE_PURSUIT: {
+                // Current robot position and orientation from odometry modules:
+                CatType_Point getRobotPos = new CatType_Point(realSense.getXPos(), realSense.getYPos());
+                double getTheta = realSense.getRotation();
+
+                // Assign the point to follow
+                CatType_CurvePoint targetPointOnLine = motionProfile.getPointOnLine();
+                double totalDistRemaining = motionProfile.getDistanceToFinalTargetPoint();
+                int targetPointIndex = motionProfile.getTargetPoint();
+
+                // Check if ready to end without the isNonStop.
+                if (!isNonStop) {
+                    if ((Math.abs(targetPoints.get(targetPoints.size() - 1).y - getRobotPos.y) < 2 &&
+                            Math.abs(targetPoints.get(targetPoints.size() - 1).x - getRobotPos.x) < 2) &&
+                            (Math.abs(targetPoints.get(targetPoints.size() - 1).getTheta() - getTheta) < 5)) {
+
+                        keepDriving = false;
+                    }
+                } else {
+
+                    // if isNonStop
+                    if (xMin < getRobotPos.x && getRobotPos.x < xMax &&
+                            yMin < getRobotPos.y && getRobotPos.y < yMax &&
+                            thetaMin < getTheta && getTheta < thetaMax) {
+
+                        keepDriving = false;
+                    }
+
+                    if (lastPower > getPower) {
+                        getPower = maxPower;
+                    }
+                }
+
+                lastPower = getPower;
+
+
+                /*
+                Calculate robot angles:
+                 */
+                double absAngleToTarget = (Math.atan2(targetPointOnLine.x - getRobotPos.x,
+                        targetPointOnLine.y - getRobotPos.y));
+                double relativeAngleToTarget = absAngleToTarget - Math.toRadians(getTheta);
+                /*
+                Calculate robot mecanum wheel powers:
+                 */
+                double lFrontPower = (Math.cos(relativeAngleToTarget) +
+                        Math.sin(relativeAngleToTarget));
+                double rFrontPower = (Math.cos(relativeAngleToTarget) -
+                        Math.sin(relativeAngleToTarget));
+                double lBackPower;
+                double rBackPower;
+
+                // Set powers for mecanum wheels:
+                lBackPower = rFrontPower;
+                rBackPower = lFrontPower;
+
+                double minTP = (motionProfile.getDistanceToFinalTargetPoint() - 6.0) / -20.0;
+
+                if (minTP > .2) {
+                    minTP = .2;
+                } else if (minTP < 0) {
+                    minTP = 0;
+                }
+
+                if ((getTheta - targetPoints.get(targetPointIndex).theta) < 2) {
+                    minTP = 0;
+                }
+
+                double turnPower = Math.abs((getTheta - targetPoints.get(targetPointIndex).theta) / 120.0);
+
+                if (turnPower < minTP) {
+                    turnPower = minTP;
+                }
+                if (turnPower > .5) {
+                    turnPower = .5;
+                }
+                Log.d("catbot", String.format("minTP: %.2f , TP: %.2f", minTP, turnPower));
+
+                /*
+                Calculate scale factor and motor powers:
+                 */
+                double SF = findScalor(lFrontPower, rFrontPower, lBackPower, rBackPower);
+                lFrontPower = lFrontPower * getPower * SF;
+                rFrontPower = rFrontPower * getPower * SF;
+                lBackPower = lBackPower * getPower * SF;
+                rBackPower = rBackPower * getPower * SF;
+
+                // Adds TURN powers to each mecanum wheel.
+                if ((getTheta - targetPoints.get(targetPointIndex).theta) < 0) {
+                    // Turn right
+                    rFrontPower = rFrontPower - (turnPower);
+                    rBackPower = rBackPower - (turnPower);
+                    lFrontPower = lFrontPower + (turnPower);
+                    lBackPower = lBackPower + (turnPower);
+                } else {
+                    // Turn left
+                    rFrontPower = rFrontPower + (turnPower);
+                    rBackPower = rBackPower + (turnPower);
+                    lFrontPower = lFrontPower - (turnPower);
+                    lBackPower = lBackPower - (turnPower);
+                }
+
+                // Calculate scale factor and motor powers:
+                double SF2 = findScalor(lFrontPower, rFrontPower, lBackPower, rBackPower);
+                leftFrontMotor.setPower(lFrontPower * SF2);
+                rightFrontMotor.setPower(rFrontPower * SF2);
+                leftRearMotor.setPower(lBackPower * SF2);
+                rightRearMotor.setPower(rBackPower * SF2);
+
+                Log.d("catbot", String.format("Translate LF:%.2f; RF:%.2f; LR:%.2f; RR:%.2f;" +
+                                "   TargetX/Y/Θ: %.2f %.2f %.1f;" +
+                                "   AimX/Y/Θ: %.2f %.2f %.1f;" +
+                                "   CurrentX/Y/Θ: %.2f %.2f %.1f;  Power: %.2f",
+                        leftFrontMotor.getPower(), rightFrontMotor.getPower(),
+                        leftRearMotor.getPower(), rightRearMotor.getPower(),
+                        targetPoints.get(targetPointIndex).x, targetPoints.get(targetPointIndex).y,
+                        targetPoints.get(targetPointIndex).theta,
+                        targetPointOnLine.x, targetPointOnLine.y, targetPointOnLine.theta,
+                        getRobotPos.x, getRobotPos.y, getTheta, getPower));
+                break;
+            }
             case TRANSLATE: {
                 // Current robot position and orientation from odometry modules:
                 double getY = realSense.getYPos();
                 double getX = realSense.getXPos();
                 double getTheta = realSense.getRotation();
-                double getPower = motionProfile.getCurrentPower();
 
                 if(movementTimer.seconds() > 0.2){
                     movementTimer.reset();
