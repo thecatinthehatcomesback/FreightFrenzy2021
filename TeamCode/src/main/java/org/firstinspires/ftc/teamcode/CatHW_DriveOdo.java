@@ -732,7 +732,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                 if (turnPower > .5) {
                     turnPower = .5;
                 }
-                Log.d("catbot", String.format("minTP: %.2f , TP: %.2f", minTP, turnPower));
+                //Log.d("catbot", String.format("minTP: %.2f , TP: %.2f", minTP, turnPower));
 
                 /*
                 Calculate scale factor and motor powers:
