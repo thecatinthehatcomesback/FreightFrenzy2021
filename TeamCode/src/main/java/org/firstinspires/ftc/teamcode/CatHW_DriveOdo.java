@@ -181,6 +181,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         // Sets enums to a default value: //
         currentMethod = DRIVE_METHOD.TRANSLATE;
+        timeout = 0;
 
     }
 
@@ -463,6 +464,11 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
     }
 
+    public void updateOdo(){
+        while (!realSense.getCameraUpdate()){
+            mainHW.opMode.sleep(1);
+        }
+    }
 
 
     //----------------------------------------------------------------------------------------------
@@ -470,9 +476,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     //----------------------------------------------------------------------------------------------
     @Override
     public boolean isDone() {
-        while (!realSense.getCameraUpdate()){
-            mainHW.opMode.sleep(1);
-        }
+
+        updateOdo();
 
         double getPower = motionProfile.updatePower(realSense.getXPos(),realSense.getYPos(), realSense.getRotation());
 

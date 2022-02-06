@@ -31,15 +31,22 @@ public class CatHW_Jaws extends CatHW_Subsystem
     public DcMotor intakeLift= null;
     public DcMotor lift = null;
     public Servo dump = null;
+    public Servo capLR = null;
+    public Servo capVertical = null;
+    public CRServo capInOut = null;
     public ColorSensor intakeColor = null;
 
     public ElapsedTime liftTime = null;
 
+    public double capLRPos = 0.66;
+    public double capVerticalPos = 0.89;
 
 
 
     // Timers: //
 
+    public ElapsedTime capLRTimer = null;
+    public ElapsedTime capVerticalTimer = null;
 
     /* Constructor */
     public CatHW_Jaws(CatHW_Async mainHardware) {
@@ -68,11 +75,18 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setTargetPosition(0);
         lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        capInOut = hwMap.crservo.get("in_out");
+        capInOut.setDirection(DcMotorSimple.Direction.REVERSE);
+        capLR = hwMap.servo.get("left_right");
+        capVertical = hwMap.servo.get("up_down");
+
         dump = hwMap.servo.get("dump");
         intakeColor = hwMap.colorSensor.get("intake_color");
         intakeColor.enableLed(true);
 
         liftTime = new ElapsedTime();
+        capLRTimer = new ElapsedTime();
+        capVerticalTimer = new ElapsedTime();
     }
 
 
@@ -126,10 +140,10 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
     public void bumpLift(double bumpAmount) {
         if (bumpAmount > 0.5){
-            lift.setTargetPosition(1 + lift.getTargetPosition());
+            lift.setTargetPosition(4 + lift.getTargetPosition());
             lift.setPower(0.4);
         }else if(bumpAmount <-0.5){
-            lift.setTargetPosition(-1 + lift.getTargetPosition());
+            lift.setTargetPosition(-4 + lift.getTargetPosition());
             lift.setPower(0.4);
         }
     }
@@ -160,6 +174,34 @@ public class CatHW_Jaws extends CatHW_Subsystem
             return false;
         }
         return true;
+    }
+
+    public void capLRAdjust(double adjustment){
+        if(capLRTimer.seconds() > 0.01) {
+            capLRPos += adjustment * 0.005;
+            if(capLRPos > 1.0){
+                capLRPos = 1.0;
+            }else if(capLRPos < 0){
+                capLRPos = 0;
+            }
+            capLR.setPosition(capLRPos);
+            capLRTimer.reset();
+        }
+    }
+    public void capVerticalAdjust(double adjustment){
+        if(capVerticalTimer.seconds() > 0.01) {
+            capVerticalPos += adjustment * 0.01;
+            if(capVerticalPos > 1.0){
+                capVerticalPos = 1.0;
+            }else if(capVerticalPos < 0){
+                capVerticalPos = 0;
+            }
+            capVertical.setPosition(capVerticalPos);
+            capVerticalTimer.reset();
+        }
+    }
+    public void setCapInOutPower(double power){
+        capInOut.setPower(power);
     }
 
     //intake color sensor methods

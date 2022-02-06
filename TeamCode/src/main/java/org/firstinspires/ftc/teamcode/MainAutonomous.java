@@ -152,7 +152,7 @@ public class MainAutonomous extends LinearOpMode
             telemetry.addData("Analysis Middle", robot.eyes.pipeline.avg2GetAnalysis());
             telemetry.addData("Analysis Left", robot.eyes.pipeline.avg3GetAnalysis());
 
-            robot.drive.isDone();
+            robot.drive.updateOdo();
             telemetry.addData("Pos","%.3f %.3f %.3f",robot.drive.realSense.getXPos(),robot.drive.realSense.getYPos(), robot.drive.realSense.getRotation());
             dashboardTelemetry.update();
 

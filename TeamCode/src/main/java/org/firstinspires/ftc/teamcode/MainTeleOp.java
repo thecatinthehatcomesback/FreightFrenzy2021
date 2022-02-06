@@ -157,6 +157,10 @@ public class MainTeleOp extends LinearOpMode
                 robot.drive.setDrivePowers(leftFront, rightFront, leftBack, rightBack);
             }
 
+            if(gamepad1.x){
+                robot.carousel.rotateCarousel();
+            }
+
             //--------------------------------------------------------------------------------------
             // Driver 2 Controls:
             //--------------------------------------------------------------------------------------
@@ -202,7 +206,12 @@ public class MainTeleOp extends LinearOpMode
             } else if(gamepad2.dpad_right){
                 robot.jaws.setLiftFirst(.8);
             }
-            robot.jaws.bumpLift(-gamepad2.left_stick_y);
+
+            if(gamepad2.y){
+                robot.jaws.bumpLift(1);
+            }else if(gamepad2.a){
+                robot.jaws.bumpLift(-1);
+            }
 
             if(gamepad2.b){
                 robot.jaws.dumpPos();
@@ -216,6 +225,11 @@ public class MainTeleOp extends LinearOpMode
 
             robot.carousel.isDone(); //will check rotation and shut it off
 
+            //Capping Mechanism
+            robot.jaws.setCapInOutPower(-gamepad2.left_stick_y);
+            robot.jaws.capLRAdjust(gamepad2.right_stick_x);
+            robot.jaws.capVerticalAdjust(gamepad2.right_stick_y);
+
 
             //--------------------------------------------------------------------------------------
             // Telemetry Data:
@@ -228,7 +242,7 @@ public class MainTeleOp extends LinearOpMode
             telemetry.addData("color","r:%3d g:%3d b:%3d a:%3d",robot.jaws.intakeColor.red(),
                     robot.jaws.intakeColor.green(),robot.jaws.intakeColor.blue(), robot.jaws.intakeColor.alpha());
             telemetry.addData("distance","volt %.3f inches %.1f",robot.drive.distanceSensor.getVoltage(), robot.drive.getDistance());
-
+            telemetry.addData("capper","LR %.3f Vert %.3f",robot.jaws.capLRPos, robot.jaws.capVerticalPos);
             telemetry.update();
 
 
