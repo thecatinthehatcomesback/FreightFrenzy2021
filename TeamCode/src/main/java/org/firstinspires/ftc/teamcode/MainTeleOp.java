@@ -133,8 +133,13 @@ public class MainTeleOp extends LinearOpMode
             }
 
             double forward = -((Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y);
-            forward = forward - gamepad1.left_trigger * 0.3;
+            forward = forward - gamepad1.left_trigger * 0.3 + gamepad1.right_trigger *.3;
             double strafe = ((Math.abs(gamepad1.right_stick_x) < 0.05) ? 0 : gamepad1.right_stick_x);
+            if(gamepad1.dpad_left){
+                strafe = strafe - 0.5;
+            }else if(gamepad1.dpad_right){
+                strafe = strafe + 0.5;
+            }
             double turn = gamepad1.left_stick_x;
 
 
@@ -183,16 +188,29 @@ public class MainTeleOp extends LinearOpMode
 
             if(gamepad2.left_bumper){
                 robot.jaws.setIntakeLiftDown();
-            }else if(gamepad2.right_bumper){
+            }else if(gamepad2.right_bumper && !robot.jaws.halfIntakeLift){
                 robot.jaws.setIntakeLiftUp();
+            }else if(gamepad2.right_bumper && robot.jaws.halfIntakeLift){
+                robot.jaws.setIntakeLiftHalf();
             }
             robot.jaws.isDone(); //will shut off intake lift when done moving
 
-            if(robot.jaws.haveFreight() && robot.jaws.isIntakeLiftDown()){
+            if(robot.jaws.haveFreight() && robot.jaws.isIntakeLiftDown() && !robot.jaws.halfIntakeLift){
                 robot.jaws.setIntakeLiftUp();
                 robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN,1500 );
 
 
+            }else if(robot.jaws.haveFreight() && robot.jaws.isIntakeLiftDown() && robot.jaws.halfIntakeLift){
+                robot.jaws.setIntakeLiftHalf();
+                robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN,1500 );
+            }
+
+            if(gamepad2.share && !robot.jaws.halfIntakeLift && delayTimer.seconds() > 0.8){
+                robot.jaws.halfIntakeLift = true;
+                delayTimer.reset();
+            }else if(gamepad2.share && robot.jaws.halfIntakeLift && delayTimer.seconds() > 0.8){
+                robot.jaws.halfIntakeLift = false;
+                delayTimer.reset();
             }
             if(gamepad2.dpad_up){
                 robot.jaws.setLiftThird(1);
@@ -225,10 +243,16 @@ public class MainTeleOp extends LinearOpMode
 
             robot.carousel.isDone(); //will check rotation and shut it off
 
+
             //Capping Mechanism
             robot.jaws.setCapInOutPower(-gamepad2.left_stick_y);
             robot.jaws.capLRAdjust(gamepad2.right_stick_x);
             robot.jaws.capVerticalAdjust(gamepad2.right_stick_y);
+
+            if(gamepad2.touchpad && delayTimer.seconds() > 0.1){
+                robot.jaws.capUnloadElement();
+            }
+
 
 
             //--------------------------------------------------------------------------------------
@@ -243,12 +267,14 @@ public class MainTeleOp extends LinearOpMode
                     robot.jaws.intakeColor.green(),robot.jaws.intakeColor.blue(), robot.jaws.intakeColor.alpha());
             telemetry.addData("distance","volt %.3f inches %.1f",robot.drive.distanceSensor.getVoltage(), robot.drive.getDistance());
             telemetry.addData("capper","LR %.3f Vert %.3f",robot.jaws.capLRPos, robot.jaws.capVerticalPos);
+
             telemetry.update();
 
 
             //dashboardTelemetry.addData("PID set","%.5f  %.5f  %.5f  %.5f",RobotConstants.LAUNCH_PID.p,RobotConstants.LAUNCH_PID.i,RobotConstants.LAUNCH_PID.d,RobotConstants.LAUNCH_PID.f);
             //dashboardTelemetry.addData("High","%4d ",2800);
             //dashboardTelemetry.addData("Low","%4d ",1800);
+            dashboardTelemetry.addData("Intake Lift Half","%b",robot.jaws.halfIntakeLift);
             dashboardTelemetry.update();
         }
 

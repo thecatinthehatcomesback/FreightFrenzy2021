@@ -41,6 +41,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
     public double capLRPos = 0.66;
     public double capVerticalPos = 0.89;
 
+    public boolean halfIntakeLift = false;
 
 
     // Timers: //
@@ -148,6 +149,14 @@ public class CatHW_Jaws extends CatHW_Subsystem
         }
     }
 
+    public void capUnloadElement(){
+        capLR.setPosition(.6);
+        capLRPos = .6;
+        capVertical.setPosition(.84);
+        capVerticalPos = .84;
+
+    }
+
     public void setLiftPower(double power){
         lift.setPower(power);
     }
@@ -165,6 +174,10 @@ public class CatHW_Jaws extends CatHW_Subsystem
         intakeLift.setTargetPosition(65);
         intakeLift.setPower(0.8);
     }
+    public void setIntakeLiftHalf(){
+        intakeLift.setTargetPosition(40);
+        intakeLift.setPower(.8);
+    }
     public void setIntakeLiftDown(){
         intakeLift.setTargetPosition(0);
         intakeLift.setPower(-0.8);
@@ -178,7 +191,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     public void capLRAdjust(double adjustment){
         if(capLRTimer.seconds() > 0.01) {
-            capLRPos += adjustment * 0.005;
+            capLRPos += adjustment * Math.abs(adjustment)  * 0.015;
             if(capLRPos > 1.0){
                 capLRPos = 1.0;
             }else if(capLRPos < 0){
@@ -190,7 +203,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
     }
     public void capVerticalAdjust(double adjustment){
         if(capVerticalTimer.seconds() > 0.01) {
-            capVerticalPos += adjustment * 0.01;
+            capVerticalPos += adjustment * Math.abs(adjustment)  * 0.015;
             if(capVerticalPos > 1.0){
                 capVerticalPos = 1.0;
             }else if(capVerticalPos < 0){

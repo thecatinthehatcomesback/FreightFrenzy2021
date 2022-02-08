@@ -50,6 +50,8 @@ public class CatMotionProfile
     private CatType_CurvePoint pointOnLine;
     private ArrayList<CatType_CurvePoint> simplePathPoints;
 
+    private boolean usingPurePursuit = false;
+
 
     /* Constructor */
     public CatMotionProfile() {}
@@ -116,6 +118,7 @@ public class CatMotionProfile
     public void setTarget(ArrayList<CatType_CurvePoint> simplePathPoints, double power, double followRadius) {
         powerTime.reset();
         setNonStopTarget(simplePathPoints, power, followRadius);
+        usingPurePursuit = true;
     }
 
     /**
@@ -129,6 +132,7 @@ public class CatMotionProfile
     public void setTarget(double x, double y, double power, double curX, double curY) {
         powerTime.reset();
         setNonStopTarget(x, y, power, curX, curY);
+        usingPurePursuit = false;
     }
 
     /**
@@ -177,10 +181,19 @@ public class CatMotionProfile
 
         // Distance left to target calculation.
         distanceToTarget = distanceBetween(curX, curY, targetX, targetY);
-
-        if (currentPower >= (1 * (distanceToTarget / rampDownDistance)-.2)) {
+        // Distance left to target calculation
+        // these will also update the target point
+        if(usingPurePursuit) {
+            CatType_Point currentPos = new CatType_Point(curX, curY);
+            pointOnLine = getFollowPoint(currentPos, followRadius);
+            distanceToFinalTargetPoint = distToPathEnd(pointOnLine)
+                    + distanceBetween(currentPos, pointOnLine);
+        }else{
+            distanceToFinalTargetPoint = distanceToTarget;
+        }
+        if (currentPower >= (1 * (distanceToFinalTargetPoint / rampDownDistance))) { //had -0.2
             // Ramp down if within the rampDownDistance.
-            currentPower = 1 * ((distanceToTarget / rampDownDistance)-.2);
+            currentPower = 1 * (distanceToFinalTargetPoint / rampDownDistance); //had -0.2
 
         } else {
             // Ramp up power.
@@ -197,6 +210,7 @@ public class CatMotionProfile
         // Finally!  Give the power!
         return currentPower;
     }
+
 
     public double getCurrentPower(){
         return currentPower;
