@@ -43,6 +43,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     public boolean halfIntakeLift = false;
 
+    private int lastLiftEncoder = 0;
 
     // Timers: //
 
@@ -125,18 +126,22 @@ public class CatHW_Jaws extends CatHW_Subsystem
     //Lift mechanism
     public void setLiftBottom(double power){
         lift.setTargetPosition(0);
+        lastLiftEncoder = -100;
         lift.setPower(power);
     }
     public void setLiftFirst(double power){
         lift.setTargetPosition(100);
+        lastLiftEncoder = -100;
         lift.setPower(power);
     }
     public void setLiftSecond(double power){
         lift.setTargetPosition(260);
+        lastLiftEncoder = -100;
         lift.setPower(power);
     }
     public void setLiftThird(double power){
         lift.setTargetPosition(420);
+        lastLiftEncoder = -100;
         lift.setPower(power);
     }
     public void bumpLift(double bumpAmount) {
@@ -230,11 +235,16 @@ public class CatHW_Jaws extends CatHW_Subsystem
 
     public void waitForLift(){
         while (lift.isBusy()) {
+            int liftPos = lift.getCurrentPosition();
             // return if the main hardware's opMode is no longer active.
             if (!(mainHW.opMode.opModeIsActive())) {
                 return;
             }
-            mainHW.robotWait(0.01);
+            if(lastLiftEncoder == liftPos){
+                return;
+            }
+            lastLiftEncoder = liftPos;
+            mainHW.robotWait(0.1);
         }
     }
 

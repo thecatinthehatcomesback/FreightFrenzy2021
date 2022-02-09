@@ -74,7 +74,6 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
     private double yMax;
     private double thetaMin;
     private double thetaMax;
-    private double lastPower = 0;
     private double maxPower;
     private double strafePower;
     private  double prevzVal;
@@ -373,6 +372,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         // Reset timer once called.
         runTime.reset();
+        movementTimer.reset();
     }
 
     /**
@@ -562,12 +562,8 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                         keepDriving = false;
                     }
 
-                    if (lastPower > getPower) {
-                        getPower = maxPower;
-                    }
-                }
 
-                lastPower = getPower;
+                }
 
 
                 /*
@@ -610,7 +606,7 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                 if (turnPower > .5) {
                     turnPower = .5;
                 }
-                Log.d("catbot", String.format("minTP: %.2f , TP: %.2f", minTP, turnPower));
+                //Log.d("catbot", String.format("minTP: %.2f , TP: %.2f", minTP, turnPower));
 
                 /*
                 Calculate scale factor and motor powers:
@@ -642,17 +638,28 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
                 rightFrontMotor.setPower(rFrontPower * SF2);
                 leftRearMotor.setPower(lBackPower * SF2);
                 rightRearMotor.setPower(rBackPower * SF2);
-
-                Log.d("catbot", String.format("Translate LF:%.2f; RF:%.2f; LR:%.2f; RR:%.2f;" +
-                                "   TargetX/Y/Θ: %.2f %.2f %.1f;" +
-                                "   AimX/Y/Θ: %.2f %.2f %.1f;" +
-                                "   CurrentX/Y/Θ: %.2f %.2f %.1f;  Power: %.2f",
+                if(movementTimer.seconds() > 0.5){
+                    movementTimer.reset();
+                    double distance = Math.sqrt(Math.pow(prevX-getRobotPos.x,2) + Math.pow(prevY - getRobotPos.y,2) );
+                    if(distance<0.5){
+                        keepDriving = false;
+                        Log.d("catbot",String.format("no movement stop distance %.3f %.3f %.3f",distance,getRobotPos.x,getRobotPos.y));
+                    }
+                    prevX = getRobotPos.x;
+                    prevY = getRobotPos.y;
+                    prevTheta = getTheta;
+                }
+                Log.d("catbot", String.format("LF:%.2f RF:%.2f LR:%.2f RR:%.2f" +
+                                " Tar:%.2f %.2f %.1f" +
+                                " Aim:%.2f %.2f %.1f" +
+                                " Cur:%.2f %.2f %.1f  Pow: %.2f Tp:%.2f %s",
                         leftFrontMotor.getPower(), rightFrontMotor.getPower(),
                         leftRearMotor.getPower(), rightRearMotor.getPower(),
                         targetPoints.get(targetPointIndex).x, targetPoints.get(targetPointIndex).y,
                         targetPoints.get(targetPointIndex).theta,
                         targetPointOnLine.x, targetPointOnLine.y, targetPointOnLine.theta,
-                        getRobotPos.x, getRobotPos.y, getTheta, getPower));
+                        getRobotPos.x, getRobotPos.y, getTheta, getPower, turnPower, isNonStop?"ns":"st"));
+
                 break;
             }
             case TRANSLATE: {
@@ -689,13 +696,10 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
                         keepDriving = false;
                     }
-                    if (lastPower > getPower) {
-                        getPower = maxPower;
-                    }
 
                 }
 
-                lastPower = getPower;
+
 
 
                 /*
