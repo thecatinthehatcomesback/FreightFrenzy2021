@@ -205,6 +205,7 @@ public class MainTeleOp extends LinearOpMode
                 robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN,1500 );
             }
 
+
             if(gamepad2.share && !robot.jaws.halfIntakeLift && delayTimer.seconds() > 0.8){
                 robot.jaws.halfIntakeLift = true;
                 delayTimer.reset();

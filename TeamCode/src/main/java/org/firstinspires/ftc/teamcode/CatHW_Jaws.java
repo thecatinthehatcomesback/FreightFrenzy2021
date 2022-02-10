@@ -140,7 +140,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         lift.setPower(power);
     }
     public void setLiftThird(double power){
-        lift.setTargetPosition(420);
+        lift.setTargetPosition(400);
         lastLiftEncoder = -100;
         lift.setPower(power);
     }
@@ -227,7 +227,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
         Log.d("catbot", String.format("Have Freight r/g/b/a %4d %4d %4d %4d",
                 intakeColor.red(),intakeColor.green(),intakeColor.blue(),intakeColor.alpha()));
 
-        if(intakeColor.alpha()>2000){
+        if(intakeColor.alpha()>1000){
             return true;
         }
         return false;
@@ -244,7 +244,7 @@ public class CatHW_Jaws extends CatHW_Subsystem
                 return;
             }
             lastLiftEncoder = liftPos;
-            mainHW.robotWait(0.1);
+            mainHW.robotWait(0.05);
         }
     }
 

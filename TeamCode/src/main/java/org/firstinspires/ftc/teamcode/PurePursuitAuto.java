@@ -117,9 +117,9 @@ public class PurePursuitAuto extends LinearOpMode
             if (CatHW_Async.isRedAlliance && !CatHW_Async.isLeftAlliance) {
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.RED);
             } else if(CatHW_Async.isRedAlliance && CatHW_Async.isLeftAlliance) {
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.STROBE_RED);
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_RED);
             }else if(!CatHW_Async.isRedAlliance && !CatHW_Async.isLeftAlliance) {
-                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.STROBE_BLUE);
+                robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_BLUE);
             }else if(!CatHW_Async.isRedAlliance && CatHW_Async.isLeftAlliance){
                 robot.lights.setDefaultColor(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             }
@@ -178,11 +178,11 @@ public class PurePursuitAuto extends LinearOpMode
         robot.robotWait(timeDelay);
 
         if(!robot.isRedAlliance && robot.isLeftAlliance){
-            blueLeft();
+            blueWarehouse();
         }else if(!robot.isRedAlliance && !robot.isLeftAlliance){
-            blueRight();
+            blueCarousal();
         }else if(robot.isRedAlliance && !robot.isLeftAlliance){
-            redRight();
+            redWarehouse();
 
 
         }else if(robot.isRedAlliance && robot.isLeftAlliance){
@@ -191,11 +191,17 @@ public class PurePursuitAuto extends LinearOpMode
         }
 }
 
-    public void blueLeft(){
-        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDrive(0,33,0,1,5);
-        robot.drive.quickDrive(10,38,-90,1,5);
+    public void blueWarehouse(){
+        ArrayList<CatType_CurvePoint> simpleDrivePath = new ArrayList<>();
 
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        simpleDrivePath.add(new CatType_CurvePoint(0, 24.5, -150));
+        simpleDrivePath.add(new CatType_CurvePoint(19, 24.5, -150));
+
+        robot.drive.pursuitDrive(simpleDrivePath, .9, 15.0, 3);
+
+        robot.drive.waitUntilDone();
 
         switch(duckPos){
             case NONE:
@@ -212,30 +218,41 @@ public class PurePursuitAuto extends LinearOpMode
                 robot.jaws.setLiftFirst(.8);
                 break;
         }
-        robot.robotWait(1);
-        robot.jaws.dumpPos();
-        robot.robotWait(2);
-        robot.jaws.unDump();
+        while (true) {
 
-        robot.jaws.setIntakeLiftDown();
+            robot.jaws.waitForLift();
+            robot.jaws.dumpPos();
+            robot.robotWait(1);
+            robot.jaws.unDump();
 
-        if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT){
-            robot.drive.quickDrive(6,38,-90,1,2);
-
-        }
+            robot.jaws.setIntakeLiftDown();
 
 
-        robot.drive.quickDrive(5,-2,-90,1,5);
-        robot.jaws.setLiftBottom(.5);
-        robot.drive.setLooseTolerance();
-        robot.drive.quickDrive(-22,-2,-90,1,5);
-        while (runningTime.seconds() < 20) {
+            robot.drive.quickDrive(5, -2, -90, 1, 5);
+            robot.jaws.setLiftBottom(.5);
+            robot.drive.setLooseTolerance();
+            robot.drive.quickDrive(-22, -2, -90, 1, 5);
+            simpleDrivePath.clear();
+            simpleDrivePath.add(new CatType_CurvePoint(19, 4, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(-18, 3, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(-26, 4, 85));
             robot.jaws.setJawPower(.5);
-            robot.drive.quickIntakeDrive(.25,5);
+            robot.drive.quickIntakeDrive(.25, 5);
+            if (robot.jaws.haveFreight()) {
+                robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN, 1500);
+
+            }
+            robot.jaws.setIntakeLiftUp();
+            if (runningTime.seconds() > 25) {
+                if (runningTime.seconds() < 29) {
+                    robot.robotWait(1);
+                }
+                break;
+            }
 
             robot.jaws.setIntakeLiftUp();
 
-            robot.drive.quickDrive(5, -2, -90, 1, 5);
+            /*robot.drive.quickDrive(5, -2, -90, 1, 5);
             robot.drive.setNormalTolerance();
             robot.jaws.setJawPower(0);
 
@@ -243,16 +260,9 @@ public class PurePursuitAuto extends LinearOpMode
             robot.jaws.setLiftThird(.8);
             robot.drive.quickDrive(10, 38, -90, 1, 5);
 
-            robot.jaws.dumpPos();
-            robot.robotWait(2);
-            robot.jaws.unDump();
-            robot.jaws.setLiftBottom(.5);
+            robot.jaws.setLiftThird(.8);*/
 
-            robot.jaws.setIntakeLiftDown();
-            robot.drive.quickDrive(5, -2, -90, 1, 5);
-            robot.jaws.setLiftBottom(.5);
-            robot.drive.setLooseTolerance();
-            robot.drive.quickDrive(-22, -2, -90, 1, 5);
+
         }
 
 
@@ -260,11 +270,18 @@ public class PurePursuitAuto extends LinearOpMode
 
 
     }
-    public void blueRight(){
-        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
-        robot.drive.quickDrive(0,30,0,.9,5);
-        robot.drive.quickDrive(-4,44,90,.9,5);
+    public void blueCarousal(){
+        ArrayList<CatType_CurvePoint> simpleDrivePath = new ArrayList<>();
 
+        CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+
+        simpleDrivePath.add(new CatType_CurvePoint(0, 30, 0));
+        simpleDrivePath.add(new CatType_CurvePoint(-4, 44, -90));
+        robot.drive.pursuitDrive(simpleDrivePath, .9, 15.0, 7);
+        robot.drive.waitUntilDone();
+
+
+        simpleDrivePath.clear();
 
 
         switch(duckPos){
@@ -288,12 +305,12 @@ public class PurePursuitAuto extends LinearOpMode
         robot.jaws.unDump();
 
         robot.jaws.setLiftBottom(.5);
-        if(duckPos == CatHW_Vision.UltimateGoalPipeline.duckPosistion.RIGHT){
-            robot.drive.quickDrive(0,8,0,.9,5);
-            robot.drive.quickDrive(26,8,0,.9,5);
-        }else{
-            robot.drive.quickDrive(26,8,0,.9,5);
-        }
+
+        simpleDrivePath.add(new CatType_CurvePoint(26, 8, 0));
+        robot.drive.pursuitDrive(simpleDrivePath, .9, 15.0, 7);
+        robot.drive.waitUntilDone();
+
+        simpleDrivePath.clear();
 
         robot.carousel.rotateCarousel();
         while(!robot.carousel.isDone()){
@@ -354,14 +371,15 @@ public class PurePursuitAuto extends LinearOpMode
         robot.robotWait(.5);
         robot.drive.quickDrive(-26,34,90,.9,5);
     }
-    public void redRight(){
+    public void redWarehouse(){
 
         ArrayList<CatType_CurvePoint> simpleDrivePath = new ArrayList<>();
 
         CatHW_Vision.UltimateGoalPipeline.duckPosistion duckPos = robot.eyes.getDuckPos();
+        //drive to dump position
         simpleDrivePath.clear();
-        simpleDrivePath.add(new CatType_CurvePoint(0, 29.5, 150));
-        simpleDrivePath.add(new CatType_CurvePoint(-7, 29.5, 150));
+        simpleDrivePath.add(new CatType_CurvePoint(0, 30.5, 150));
+        simpleDrivePath.add(new CatType_CurvePoint(-6, 31.5, 150));
 
         robot.drive.pursuitDrive(simpleDrivePath, .9, 15.0, 3);
 
@@ -369,17 +387,17 @@ public class PurePursuitAuto extends LinearOpMode
 
         switch(duckPos){
             case NONE:
-                robot.jaws.setLiftThird(.5);
+                robot.jaws.setLiftThird(.8);
                 break;
             case RIGHT:
-                robot.jaws.setLiftThird(.5);
+                robot.jaws.setLiftThird(.8);
 
                 break;
             case MIDDLE:
-                robot.jaws.setLiftSecond(.5);
+                robot.jaws.setLiftSecond(.8);
                 break;
             case LEFT:
-                robot.jaws.setLiftFirst(.5);
+                robot.jaws.setLiftFirst(.8);
                 break;
         }
 
@@ -393,28 +411,40 @@ public class PurePursuitAuto extends LinearOpMode
             robot.drive.setLooseTolerance();
             robot.jaws.setIntakeLiftDown();
 
-            simpleDrivePath.clear();
-            simpleDrivePath.add(new CatType_CurvePoint(-10, 3, 95));
-            simpleDrivePath.add(new CatType_CurvePoint(30, 3, 95));
+            robot.drive.setLooseTolerance();
 
-            robot.drive.pursuitDrive(simpleDrivePath, .9, 7.0, 7);
+            //Drive into warehouse
+            simpleDrivePath.clear();
+            simpleDrivePath.add(new CatType_CurvePoint(-3, 4, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(18, 3, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(26, 4, 85));
+
+            robot.drive.pursuitDrive(simpleDrivePath, .8, 7.0, 7);
             robot.drive.waitUntilDone();
 
             robot.jaws.setJawPower(.8);
 
-            robot.drive.quickIntakeDrive(0.25, 5);
+            robot.drive.quickIntakeDrive(0.3, 2.5);
+            if(robot.jaws.haveFreight()){
+                robot.lights.blink(1, RevBlinkinLedDriver.BlinkinPattern.GREEN,1500 );
 
+            }
             robot.jaws.setIntakeLiftUp();
             if(runningTime.seconds() > 25){
+                if(runningTime.seconds() < 29){
+                    robot.robotWait(1);
+                }
                 break;
             }
             robot.drive.setNormalTolerance();
 
+            //drive to dump position
             simpleDrivePath.clear();
-            simpleDrivePath.add(new CatType_CurvePoint(-10, 3, 90));
-            simpleDrivePath.add(new CatType_CurvePoint(-7, 29.5, 135));
+            simpleDrivePath.add(new CatType_CurvePoint(18, 3, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(0, 4, 90));
+            simpleDrivePath.add(new CatType_CurvePoint(-6, 31.5, 135));
 
-            robot.drive.pursuitDrive(simpleDrivePath, .9, 7.0, 7);
+            robot.drive.pursuitDrive(simpleDrivePath, .8, 7.0, 7);
             robot.drive.waitUntilDone();
             robot.jaws.setJawPower(0);
 
