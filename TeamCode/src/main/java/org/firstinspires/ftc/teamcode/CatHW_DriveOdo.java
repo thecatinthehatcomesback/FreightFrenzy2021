@@ -353,6 +353,10 @@ public class CatHW_DriveOdo extends CatHW_Subsystem
 
         targetPoints.add(0, new CatType_CurvePoint(realSense.getXPos(), realSense.getYPos(),realSense.getRotation()));
         this.followRadius = followRadius;
+        for(int i = 0; i<targetPoints.size(); i++){
+            Log.d("catbot",String.format("Pursuit Point %.2f %.2f %.2f",targetPoints.get(i).x,targetPoints.get(i).y, targetPoints.get(i).theta ));
+
+        }
 
         //CatType_CurvePoint targetPoint = updatesThread.powerUpdate.getFollowPoint(targetPoints,
         //        updatesThread.positionUpdate.returnRobotPointInches(), followRadius);

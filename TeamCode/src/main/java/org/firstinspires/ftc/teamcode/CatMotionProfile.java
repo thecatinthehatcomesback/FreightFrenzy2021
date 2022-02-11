@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class CatMotionProfile
     private double distanceToTarget;
 
     private static final double rampUpTime       = 400;  // In milliseconds
-    private static final double rampDownDistance = 23;
+    private static final double rampDownDistance = 22;
 
     private double targetX;
     private double targetY;
@@ -176,7 +178,8 @@ public class CatMotionProfile
     public double updatePower(double curX, double curY, double curTheta) {
 
         // Update the current position:
-
+        CatType_Point currentPos= new CatType_Point(curX,curY);
+        CatType_Point finalPoint = new CatType_Point(0,0);
         double currentTime = powerTime.milliseconds();
 
         // Distance left to target calculation.
@@ -184,10 +187,10 @@ public class CatMotionProfile
         // Distance left to target calculation
         // these will also update the target point
         if(usingPurePursuit) {
-            CatType_Point currentPos = new CatType_Point(curX, curY);
+            finalPoint.x = simplePathPoints.get(simplePathPoints.size()-1).x;
+            finalPoint.y = simplePathPoints.get(simplePathPoints.size()-1).y;
             pointOnLine = getFollowPoint(currentPos, followRadius);
-            distanceToFinalTargetPoint = distToPathEnd(pointOnLine)
-                    + distanceBetween(currentPos, pointOnLine);
+            distanceToFinalTargetPoint = distanceBetween(currentPos, finalPoint);
         }else{
             distanceToFinalTargetPoint = distanceToTarget;
         }
@@ -199,7 +202,9 @@ public class CatMotionProfile
             // Ramp up power.
             currentPower = maxPower * (currentTime / rampUpTime);
         }
-
+        Log.d("catbot",String.format("motion cur:%.2f %.2f tar:%.2f %.2f dto %.2f + %.2f dist:%.2f pow:%.2f min:%.2f calc:%.2f",
+                curX,curY,pointOnLine.x, pointOnLine.y, distToPathEnd(pointOnLine),distanceBetween(currentPos, pointOnLine),
+                distanceToFinalTargetPoint,currentPower,minPower,calcMinPowerScale(curX, curY, curTheta)));
         // Checks to make sure we are within our minimum and maximum power ranges.
         if (currentPower < (minPower*calcMinPowerScale(curX, curY, curTheta)))
             currentPower = minPower*calcMinPowerScale(curX, curY, curTheta);
